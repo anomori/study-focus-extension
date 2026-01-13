@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Study Focus Guard</title>
+    <style>
+        body {
+            width: 300px;
+            padding: 10px;
+            font-family: sans-serif;
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            background: #f0f0f0;
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        button.remove-btn {
+            background: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #add-section {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        input {
+            flex-grow: 1;
+            padding: 5px;
+        }
+
+        button#add-btn {
+            padding: 5px 10px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>勉強の脱線防止</h2>
+    <div id="status">
+        <p>システム: <span id="system-status">準備中...</span></p>
+    </div>
+
+    <h3>勉強する内容</h3>
+    <div id="add-section">
+        <input type="text" id="new-topic" placeholder="例: 線形代数, 英語">
+        <button id="add-btn">追加</button>
+    </div>
+
+    <ul id="topic-list">
+        <!-- Topics here -->
+    </ul>
+
+    <script src="popup.js"></script>
+</body>
+
+</html>

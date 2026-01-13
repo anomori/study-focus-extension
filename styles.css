@@ -1,0 +1,57 @@
+/* styles.css */
+
+#distraction-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 999999;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: sans-serif;
+    pointer-events: auto; /* Ensure it blocks clicks */
+}
+
+.distraction-content {
+    background: #333;
+    padding: 40px;
+    border-radius: 10px;
+    text-align: center;
+    border: 2px solid #ff4d4d;
+    position: relative;
+    max-width: 500px;
+}
+
+.distraction-content h2 {
+    margin-top: 0;
+    color: #ff4d4d;
+}
+
+.distraction-content button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.annoying-element {
+    font-size: 50px;
+    position: absolute;
+    animation: floating 3s ease-in-out infinite;
+}
+
+@keyframes floating {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    25% { transform: translate(100px, -50px) rotate(20deg); }
+    50% { transform: translate(0, 100px) rotate(-10deg); }
+    75% { transform: translate(-100px, -50px) rotate(10deg); }
+    100% { transform: translate(0, 0) rotate(0deg); }
+}
