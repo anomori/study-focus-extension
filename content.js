@@ -1,8 +1,8 @@
 // content.js
 console.log("Study Focus Guard: Content script loaded.");
 
-const RELEVANCE_THRESHOLD = 0.35; // Adjusted to allow related but slightly distant topics (e.g. Algorithm vs Program)
-let isChecked = false;
+const RELEVANCE_THRESHOLD = 0.35;
+let recheckTimeoutId = null;
 
 // Known distraction domains to penalize
 const DISTRACTION_DOMAINS = [
@@ -10,10 +10,26 @@ const DISTRACTION_DOMAINS = [
     'tiktok.com', 'netflix.com', 'primevideo.com', 'hulu.com', 'nicovideo.jp'
 ];
 
-// 1. Check for YouTube Shorts (Immediate Block)
-if (window.location.href.includes("youtube.com/shorts/")) {
-    blockShorts();
+// Domains to completely block (like YouTube Shorts)
+const BLOCKED_DOMAINS = ['instagram.com'];
+
+// 1. Check for YouTube Shorts or Blocked Domains (Immediate Block)
+async function checkImmediateBlocks() {
+    const settings = await chrome.storage.local.get('extensionEnabled');
+    if (settings.extensionEnabled === false) return;
+
+    if (window.location.href.includes("youtube.com/shorts/")) {
+        blockContent("Shorts Blocked", "Shorts are completely blocked during study sessions.");
+        return;
+    }
+
+    if (BLOCKED_DOMAINS.some(domain => location.hostname.includes(domain))) {
+        blockContent("Instagram Blocked", "Instagram is completely blocked during study sessions.");
+        return;
+    }
 }
+
+checkImmediateBlocks();
 
 // Watch for URL changes (SPA support like YouTube)
 let lastUrl = location.href;
@@ -25,18 +41,27 @@ new MutationObserver(() => {
     }
 }).observe(document, { subtree: true, childList: true });
 
-function onUrlChange() {
-    // Re-check shorts
+async function onUrlChange() {
+    const settings = await chrome.storage.local.get('extensionEnabled');
+    if (settings.extensionEnabled === false) return;
+
+    // Clear any pending recheck
+    if (recheckTimeoutId) {
+        clearTimeout(recheckTimeoutId);
+        recheckTimeoutId = null;
+    }
+
     if (location.href.includes("youtube.com/shorts/")) {
-        blockShorts();
+        blockContent("Shorts Blocked", "Shorts are completely blocked during study sessions.");
+    } else if (BLOCKED_DOMAINS.some(domain => location.hostname.includes(domain))) {
+        blockContent("Instagram Blocked", "Instagram is completely blocked during study sessions.");
     } else {
-        // Remove overlay if we navigated away from shorts/distraction (or re-check)
         removeDistractionOverlay();
         checkRelevance();
     }
 }
 
-function blockShorts() {
+function blockContent(title, message) {
     document.body.innerHTML = `
         <div style="
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -44,8 +69,8 @@ function blockShorts() {
             justify-content: center; align-items: center; z-index: 999999;
             font-family: sans-serif;
         ">
-            <h1>⛔ Shorts Blocked ⛔</h1>
-            <p>Shorts are completely blocked during study sessions.</p>
+            <h1>⛔ ${title} ⛔</h1>
+            <p>${message}</p>
         </div>
     `;
     // Stop video playback if possible
@@ -55,25 +80,39 @@ function blockShorts() {
 
 // 2. Similarity Check
 async function checkRelevance() {
-    // If it's a known distraction (Shorts), we already blocked it.
+    // Check if extension is enabled
+    const settings = await chrome.storage.local.get('extensionEnabled');
+    if (settings.extensionEnabled === false) {
+        console.log("Extension disabled. Skipping check.");
+        return;
+    }
+
+    // Skip blocked domains check
     if (location.href.includes("youtube.com/shorts/")) return;
+    if (BLOCKED_DOMAINS.some(domain => location.hostname.includes(domain))) return;
 
-    // Get topics
+    // Get topics (new format with enabled flag)
     const data = await chrome.storage.local.get('studyTopics');
-    let topics = data.studyTopics || [];
+    let topicsData = data.studyTopics || [];
 
-    // Topic Expansion Logic (Synonyms & Related Terms)
-    // Helps catch specific sub-topics even if the user only registered a broad term.
+    // Handle old format (string array) and filter enabled topics
+    let topics = [];
+    if (topicsData.length > 0) {
+        if (typeof topicsData[0] === 'string') {
+            topics = [...topicsData];
+        } else {
+            topics = topicsData.filter(t => t.enabled).map(t => t.topic);
+        }
+    }
+
+    // Topic Expansion Logic
     const TOPIC_EXPANSIONS = {
         "program": ["programming", "coding", "algorithm", "software", "developer", "engineering", "python", "javascript", "c#", "java", "code"],
         "プログラム": ["プログラミング", "コーディング", "アルゴリズム", "ソフトウェア", "開発", "エンジニア", "コード", "アプリ"],
-
         "math": ["mathematics", "calculus", "algebra", "geometry", "statistics", "physics"],
         "数学": ["算数", "計算", "幾何学", "代数", "微積分", "統計", "物理", "数式"],
-
         "english": ["language", "grammar", "vocabulary", "toeic", "toefl", "conversation"],
         "英語": ["英単語", "英文法", "英会話", "語学", "TOEIC", "留学"],
-
         "study": ["learning", "education", "course", "textbook"],
         "勉強": ["学習", "教育", "参考書", "教科書", "学び"]
     };
@@ -82,22 +121,20 @@ async function checkRelevance() {
         let expanded = [...topics];
         topics.forEach(t => {
             const lowerT = t.toLowerCase();
-            // Check direct match in dictionary
             if (TOPIC_EXPANSIONS[lowerT]) {
                 expanded.push(...TOPIC_EXPANSIONS[lowerT]);
             }
         });
-        // Remove duplicates
         topics = [...new Set(expanded)];
         console.log("Expanded Topics:", topics);
     }
 
     if (topics.length === 0) {
-        console.log("No study topics registered. Skipping check.");
+        console.log("No enabled study topics. Skipping check.");
         return;
     }
 
-    // Extract Context (Title + H1 + Meta Description) to improve accuracy
+    // Extract Context (Title + H1 + Meta Description)
     let contextText = document.title;
     let isEducationalContext = false;
     console.log("Context initialized. Educational:", isEducationalContext);
@@ -107,14 +144,14 @@ async function checkRelevance() {
         try {
             const jsonLd = document.querySelector('script[type="application/ld+json"]');
             if (jsonLd) {
-                const data = JSON.parse(jsonLd.innerText);
-                if (data.description) {
-                    contextText += " " + data.description.substring(0, 500);
+                const jsonData = JSON.parse(jsonLd.innerText);
+                if (jsonData.description) {
+                    contextText += " " + jsonData.description.substring(0, 500);
                 }
-                if (data.genre) {
-                    console.log("YouTube Genre detected:", data.genre);
+                if (jsonData.genre) {
+                    console.log("YouTube Genre detected:", jsonData.genre);
                     const eduGenres = ['Education', 'Science & Technology', 'Howto & Style', '教育', '科学と技術', 'ハウツーとスタイル'];
-                    if (eduGenres.includes(data.genre)) {
+                    if (eduGenres.includes(jsonData.genre)) {
                         isEducationalContext = true;
                     }
                 }
@@ -130,7 +167,7 @@ async function checkRelevance() {
     const metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc) contextText += " " + metaDesc.content;
 
-    // Truncate to avoid token limit issues (though rare with local model)
+    // Truncate to avoid token limit issues
     contextText = contextText.substring(0, 1000);
 
     console.log("Checking relevance for:", contextText);
@@ -139,16 +176,16 @@ async function checkRelevance() {
         const response = await chrome.runtime.sendMessage({
             type: 'CHECK_RELEVANCE',
             data: {
-                pageTitle: contextText, // Send fuller context
+                pageTitle: contextText,
                 studyTopics: topics
             }
         });
 
         let score = response.score;
+        const rawScore = response.score;
         console.log("Raw Similarity Score:", score);
 
-        // Keyword Bonus: If topic appears in title/description, boost score significantly!
-        // This ensures that if the specific word is there, it passes.
+        // Keyword Bonus
         const isTopicKeywordPresent = topics.some(topic =>
             contextText.toLowerCase().includes(topic.toLowerCase())
         );
@@ -169,10 +206,22 @@ async function checkRelevance() {
             score -= 0.2;
         }
 
+        // Additional penalty for Twitter/X home timeline
+        if (location.hostname.includes('twitter.com') || location.hostname.includes('x.com')) {
+            if (location.pathname === '/home' || location.pathname === '/') {
+                console.log("Applying Twitter/X home penalty (-0.15)");
+                score -= 0.15;
+            }
+        }
+
         console.log("Final Score:", score);
 
-        // Show debug overlay
-        showDebugScore(score, response.score); // Pass final score and raw score
+        // Report score to background for popup display
+        chrome.runtime.sendMessage({
+            type: 'REPORT_SCORE',
+            score: score,
+            rawScore: rawScore
+        });
 
         if (score !== undefined && score < RELEVANCE_THRESHOLD) {
             showDistractionOverlay(score);
@@ -181,32 +230,6 @@ async function checkRelevance() {
     } catch (e) {
         console.error("Error checking relevance:", e);
     }
-}
-
-function showDebugScore(finalScore, rawScore) {
-    let debugEl = document.getElementById('debug-score-overlay');
-    if (!debugEl) {
-        debugEl = document.createElement('div');
-        debugEl.id = 'debug-score-overlay';
-        debugEl.style.cssText = `
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.7);
-            color: #0f0;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-family: monospace;
-            font-size: 14px;
-            z-index: 9999999;
-            pointer-events: none;
-        `;
-        document.body.appendChild(debugEl);
-    }
-
-    const isSafe = finalScore >= RELEVANCE_THRESHOLD;
-    debugEl.style.color = isSafe ? '#0f0' : '#f00';
-    debugEl.innerText = `Score: ${finalScore.toFixed(2)} (Raw: ${rawScore.toFixed(2)}) ${isSafe ? 'OK' : 'BLOCK'}`;
 }
 
 function showDistractionOverlay(score) {
@@ -227,6 +250,14 @@ function showDistractionOverlay(score) {
 
     document.getElementById('dismiss-overlay').addEventListener('click', () => {
         overlay.remove();
+
+        // Schedule recheck after 2 minutes
+        recheckTimeoutId = setTimeout(() => {
+            console.log("2 minutes passed. Re-checking relevance...");
+            checkRelevance();
+        }, 2 * 60 * 1000); // 2 minutes = 120000ms
+
+        console.log("Overlay dismissed. Recheck scheduled in 2 minutes.");
     });
 }
 
@@ -235,6 +266,54 @@ function removeDistractionOverlay() {
     if (el) el.remove();
 }
 
-// Run initial check
-// Wait a moment for dynamic content to load title
-setTimeout(checkRelevance, 2000);
+// Periodic check interval (30 seconds)
+const PERIODIC_CHECK_INTERVAL = 30 * 1000; // 30 seconds
+let periodicCheckIntervalId = null;
+
+function startPeriodicCheck() {
+    if (periodicCheckIntervalId) return; // Already running
+    periodicCheckIntervalId = setInterval(() => {
+        console.log("Periodic check (30s interval)...");
+        checkRelevance();
+    }, PERIODIC_CHECK_INTERVAL);
+    console.log("Periodic check started (every 30 seconds).");
+}
+
+function stopPeriodicCheck() {
+    if (periodicCheckIntervalId) {
+        clearInterval(periodicCheckIntervalId);
+        periodicCheckIntervalId = null;
+        console.log("Periodic check stopped.");
+    }
+}
+
+// Listen for extension toggle messages
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.type === 'EXTENSION_TOGGLED') {
+        if (message.enabled) {
+            console.log("Extension enabled. Running check...");
+            checkImmediateBlocks();
+            checkRelevance();
+            startPeriodicCheck();
+        } else {
+            console.log("Extension disabled. Removing overlays...");
+            removeDistractionOverlay();
+            stopPeriodicCheck();
+            if (recheckTimeoutId) {
+                clearTimeout(recheckTimeoutId);
+                recheckTimeoutId = null;
+            }
+        }
+    }
+});
+
+// Run initial check after page loads and start periodic checks
+setTimeout(() => {
+    checkRelevance();
+    // Start periodic check if extension is enabled
+    chrome.storage.local.get('extensionEnabled', (data) => {
+        if (data.extensionEnabled !== false) {
+            startPeriodicCheck();
+        }
+    });
+}, 2000);

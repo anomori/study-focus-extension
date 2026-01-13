@@ -6,27 +6,224 @@
     <title>Study Focus Guard</title>
     <style>
         body {
-            width: 300px;
-            padding: 10px;
-            font-family: sans-serif;
+            width: 320px;
+            padding: 12px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a2e;
+            color: #eaeaea;
         }
 
         h2 {
             margin-top: 0;
+            color: #00d9ff;
+            font-size: 16px;
         }
 
+        h3 {
+            margin: 12px 0 8px;
+            font-size: 13px;
+            color: #888;
+        }
+
+        /* スコア表示セクション */
+        #score-section {
+            background: linear-gradient(135deg, #16213e 0%, #1a1a2e 100%);
+            border: 1px solid #0f3460;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        #score-display {
+            font-size: 28px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+
+        #score-display.safe {
+            color: #00ff88;
+        }
+
+        #score-display.warning {
+            color: #ffaa00;
+        }
+
+        #score-display.danger {
+            color: #ff4d4d;
+        }
+
+        #score-status {
+            font-size: 11px;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        /* 拡張機能ON/OFFトグル */
+        #master-toggle-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #16213e;
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-bottom: 12px;
+        }
+
+        #master-toggle-section span {
+            font-size: 13px;
+        }
+
+        /* トグルスイッチ共通 */
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            cursor: pointer;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #444;
+            border-radius: 24px;
+            transition: 0.3s;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        .toggle-switch input:checked+.toggle-slider {
+            background-color: #00d9ff;
+        }
+
+        .toggle-switch input:checked+.toggle-slider:before {
+            transform: translateX(20px);
+        }
+
+        /* システムステータス */
+        #status {
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+
+        #system-status {
+            font-weight: bold;
+        }
+
+        /* トピック追加セクション */
+        #add-section {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"] {
+            flex-grow: 1;
+            padding: 8px 10px;
+            border: 1px solid #0f3460;
+            border-radius: 6px;
+            background: #16213e;
+            color: #eaeaea;
+            font-size: 12px;
+        }
+
+        input[type="text"]::placeholder {
+            color: #666;
+        }
+
+        button#add-btn {
+            padding: 8px 14px;
+            background: linear-gradient(135deg, #00d9ff, #0099cc);
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        button#add-btn:hover {
+            background: linear-gradient(135deg, #00ffff, #00bbee);
+        }
+
+        /* トピックリスト */
         ul {
             list-style-type: none;
             padding: 0;
+            margin: 0;
+            max-height: 180px;
+            overflow-y: auto;
         }
 
         li {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 5px;
-            background: #f0f0f0;
-            padding: 5px;
-            border-radius: 4px;
+            align-items: center;
+            margin-bottom: 6px;
+            background: #16213e;
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid #0f3460;
+        }
+
+        .topic-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .topic-name {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 13px;
+        }
+
+        .topic-name.disabled {
+            color: #666;
+            text-decoration: line-through;
+        }
+
+        .topic-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toggle-switch.small {
+            width: 36px;
+            height: 20px;
+        }
+
+        .toggle-switch.small .toggle-slider:before {
+            height: 14px;
+            width: 14px;
+        }
+
+        .toggle-switch.small input:checked+.toggle-slider:before {
+            transform: translateX(16px);
         }
 
         button.remove-btn {
@@ -35,37 +232,54 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            padding: 4px 8px;
+            font-size: 11px;
         }
 
-        #add-section {
-            display: flex;
-            gap: 5px;
-            margin-bottom: 15px;
+        button.remove-btn:hover {
+            background: #ff6666;
         }
 
-        input {
-            flex-grow: 1;
-            padding: 5px;
+        /* スクロールバー */
+        ul::-webkit-scrollbar {
+            width: 6px;
         }
 
-        button#add-btn {
-            padding: 5px 10px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
+        ul::-webkit-scrollbar-track {
+            background: #16213e;
+            border-radius: 3px;
+        }
+
+        ul::-webkit-scrollbar-thumb {
+            background: #0f3460;
+            border-radius: 3px;
         }
     </style>
 </head>
 
 <body>
-    <h2>勉強の脱線防止</h2>
-    <div id="status">
-        <p>システム: <span id="system-status">準備中...</span></p>
+    <h2>🎯 勉強の脱線防止</h2>
+
+    <!-- スコア表示 -->
+    <div id="score-section">
+        <div id="score-display" class="safe">---</div>
+        <div id="score-status">スコアを取得中...</div>
     </div>
 
-    <h3>勉強する内容</h3>
+    <!-- 拡張機能ON/OFF -->
+    <div id="master-toggle-section">
+        <span>🛡️ 判定・ブロック機能</span>
+        <label class="toggle-switch">
+            <input type="checkbox" id="master-toggle" checked>
+            <span class="toggle-slider"></span>
+        </label>
+    </div>
+
+    <div id="status">
+        <span>システム: </span><span id="system-status">準備中...</span>
+    </div>
+
+    <h3>📚 勉強する内容</h3>
     <div id="add-section">
         <input type="text" id="new-topic" placeholder="例: 線形代数, 英語">
         <button id="add-btn">追加</button>
