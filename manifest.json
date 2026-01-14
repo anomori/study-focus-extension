@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Study Focus Guard",
-  "version": "1.0",
+  "version": "1.1",
   "description": "Prevents distraction by analyzing content relevance to your study topics.",
   "permissions": [
     "storage",
@@ -44,7 +44,10 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "offscreen.html"
+        "offscreen.html",
+        "first-run-dialog.html",
+        "settings.html",
+        "statistics-storage.js"
       ],
       "matches": [
         "<all_urls>"

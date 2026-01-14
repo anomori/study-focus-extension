@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>データ記録の設定 - Study Focus Guard</title>
+    <link rel="stylesheet" href="first-run-dialog.css">
+</head>
+
+<body>
+    <div class="dialog-container">
+        <div class="dialog-header">
+            <div class="icon">📊</div>
+            <h1>データの記録を有効にしますか？</h1>
+            <p class="subtitle">統計機能を使って、勉強の進捗を確認できます</p>
+        </div>
+
+        <div class="dialog-content">
+            <div class="option-group">
+                <label class="option-item">
+                    <div class="option-info">
+                        <span class="option-icon">💪</span>
+                        <div class="option-text">
+                            <span class="option-title">我慢回数を記録する</span>
+                            <span class="option-desc">警告を閉じずにページを離れた回数を記録</span>
+                        </div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="record-patience">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </label>
+
+                <label class="option-item">
+                    <div class="option-info">
+                        <span class="option-icon">🌐</span>
+                        <div class="option-text">
+                            <span class="option-title">閲覧サイト・時間を記録する</span>
+                            <span class="option-desc">どのサイトをどれくらい見たかを記録</span>
+                        </div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="record-browsing">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </label>
+
+                <label class="option-item sub-option" id="sns-only-option">
+                    <div class="option-info">
+                        <span class="option-icon">📱</span>
+                        <div class="option-text">
+                            <span class="option-title">SNSの時間だけ記録する</span>
+                            <span class="option-desc">Twitter, Instagram, TikTokなどのみ</span>
+                        </div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="record-sns-only">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </label>
+            </div>
+
+            <div class="privacy-note">
+                <span class="privacy-icon">🔒</span>
+                <span>データはすべてローカルに保存され、外部には送信されません。いつでも設定を変更・削除できます。</span>
+            </div>
+        </div>
+
+        <div class="dialog-actions">
+            <button id="btn-skip" class="btn btn-secondary">記録しない</button>
+            <button id="btn-enable" class="btn btn-primary">選択した項目を記録する</button>
+        </div>
+    </div>
+
+    <script src="statistics-storage.js"></script>
+    <script src="first-run-dialog.js"></script>
+</body>
+
+</html>

@@ -27,8 +27,8 @@
 
         /* スコア表示セクション */
         #score-section {
-            background: linear-gradient(135deg, #16213e 0%, #1a1a2e 100%);
-            border: 1px solid #0f3460;
+            background: linear-gradient(135deg, #2a3a5c 0%, #1a1a2e 100%);
+            border: 1px solid #2a5090;
             border-radius: 8px;
             padding: 12px;
             margin-bottom: 12px;
@@ -64,7 +64,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #16213e;
+            background: #2a3a5c;
             border-radius: 8px;
             padding: 10px 12px;
             margin-bottom: 12px;
@@ -139,9 +139,9 @@
         input[type="text"] {
             flex-grow: 1;
             padding: 8px 10px;
-            border: 1px solid #0f3460;
+            border: 1px solid #2a5090;
             border-radius: 6px;
-            background: #16213e;
+            background: #2a3a5c;
             color: #eaeaea;
             font-size: 12px;
         }
@@ -179,10 +179,10 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 6px;
-            background: #16213e;
+            background: #2a3a5c;
             padding: 8px 10px;
             border-radius: 6px;
-            border: 1px solid #0f3460;
+            border: 1px solid #2a5090;
         }
 
         .topic-info {
@@ -246,12 +246,12 @@
         }
 
         ul::-webkit-scrollbar-track {
-            background: #16213e;
+            background: #2a3a5c;
             border-radius: 3px;
         }
 
         ul::-webkit-scrollbar-thumb {
-            background: #0f3460;
+            background: #2a5090;
             border-radius: 3px;
         }
     </style>
@@ -288,6 +288,21 @@
     <ul id="topic-list">
         <!-- Topics here -->
     </ul>
+
+    <!-- 詳細設定ボタン -->
+    <div id="settings-section" style="margin-top: 16px; text-align: center;">
+        <button id="open-settings" style="
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #2a3a5c 0%, #2a5090 100%);
+            border: 1px solid rgba(0, 217, 255, 0.4);
+            border-radius: 8px;
+            color: #00d9ff;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        ">⚙️ 詳細設定・統計を見る</button>
+    </div>
 
     <script src="popup.js"></script>
 </body>

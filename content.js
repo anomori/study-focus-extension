@@ -3,28 +3,44 @@ console.log("Study Focus Guard: Content script loaded.");
 
 const RELEVANCE_THRESHOLD = 0.35;
 let recheckTimeoutId = null;
+let isOverlayShowing = false;
 
-// Known distraction domains to penalize
+// Known distraction domains to penalize (for score calculation only)
 const DISTRACTION_DOMAINS = [
     'twitter.com', 'x.com', 'facebook.com', 'instagram.com',
     'tiktok.com', 'netflix.com', 'primevideo.com', 'hulu.com', 'nicovideo.jp'
 ];
 
-// Domains to completely block (like YouTube Shorts)
-const BLOCKED_DOMAINS = ['instagram.com'];
+// 1. Check site settings (Allowlist/Blocklist)
+async function checkSiteSettings() {
+    try {
+        const response = await chrome.runtime.sendMessage({
+            type: 'CHECK_SITE_SETTINGS',
+            url: window.location.href
+        });
+        return response || { allowed: false, blocked: false };
+    } catch (e) {
+        console.error('Error checking site settings:', e);
+        return { allowed: false, blocked: false };
+    }
+}
 
-// 1. Check for YouTube Shorts or Blocked Domains (Immediate Block)
+// 2. Check for immediate blocks
 async function checkImmediateBlocks() {
     const settings = await chrome.storage.local.get('extensionEnabled');
     if (settings.extensionEnabled === false) return;
 
-    if (window.location.href.includes("youtube.com/shorts/")) {
-        blockContent("Shorts Blocked", "Shorts are completely blocked during study sessions.");
+    const siteSettings = await checkSiteSettings();
+
+    // If allowlisted, skip all checks
+    if (siteSettings.allowed) {
+        console.log("Site is allowlisted. Skipping all checks.");
         return;
     }
 
-    if (BLOCKED_DOMAINS.some(domain => location.hostname.includes(domain))) {
-        blockContent("Instagram Blocked", "Instagram is completely blocked during study sessions.");
+    // If blocked, show block screen
+    if (siteSettings.blocked) {
+        blockContent("ブロック中", `${siteSettings.reason || 'このサイト'}は勉強中にブロックされています。`);
         return;
     }
 }
@@ -51,10 +67,18 @@ async function onUrlChange() {
         recheckTimeoutId = null;
     }
 
-    if (location.href.includes("youtube.com/shorts/")) {
-        blockContent("Shorts Blocked", "Shorts are completely blocked during study sessions.");
-    } else if (BLOCKED_DOMAINS.some(domain => location.hostname.includes(domain))) {
-        blockContent("Instagram Blocked", "Instagram is completely blocked during study sessions.");
+    const siteSettings = await checkSiteSettings();
+
+    // If allowlisted, skip all checks
+    if (siteSettings.allowed) {
+        console.log("Site is allowlisted. Skipping all checks.");
+        removeDistractionOverlay();
+        return;
+    }
+
+    // If blocked, show block screen
+    if (siteSettings.blocked) {
+        blockContent("ブロック中", `${siteSettings.reason || 'このサイト'}は勉強中にブロックされています。`);
     } else {
         removeDistractionOverlay();
         checkRelevance();
@@ -78,7 +102,7 @@ function blockContent(title, message) {
     videos.forEach(v => v.pause());
 }
 
-// 2. Similarity Check
+// 3. Similarity Check
 async function checkRelevance() {
     // Check if extension is enabled
     const settings = await chrome.storage.local.get('extensionEnabled');
@@ -87,9 +111,13 @@ async function checkRelevance() {
         return;
     }
 
-    // Skip blocked domains check
-    if (location.href.includes("youtube.com/shorts/")) return;
-    if (BLOCKED_DOMAINS.some(domain => location.hostname.includes(domain))) return;
+    // Check site settings
+    const siteSettings = await checkSiteSettings();
+    if (siteSettings.allowed) {
+        console.log("Site is allowlisted. Skipping relevance check.");
+        return;
+    }
+    if (siteSettings.blocked) return; // Already blocked
 
     // Get topics (new format with enabled flag)
     const data = await chrome.storage.local.get('studyTopics');
@@ -235,6 +263,8 @@ async function checkRelevance() {
 function showDistractionOverlay(score) {
     if (document.getElementById('distraction-overlay')) return;
 
+    isOverlayShowing = true;
+
     const overlay = document.createElement('div');
     overlay.id = 'distraction-overlay';
     overlay.innerHTML = `
@@ -250,6 +280,7 @@ function showDistractionOverlay(score) {
 
     document.getElementById('dismiss-overlay').addEventListener('click', () => {
         overlay.remove();
+        isOverlayShowing = false;
 
         // Schedule recheck after 2 minutes
         recheckTimeoutId = setTimeout(() => {
@@ -263,8 +294,37 @@ function showDistractionOverlay(score) {
 
 function removeDistractionOverlay() {
     const el = document.getElementById('distraction-overlay');
-    if (el) el.remove();
+    if (el) {
+        el.remove();
+        isOverlayShowing = false;
+    }
 }
+
+// Record patience event when leaving page with overlay showing
+function recordPatienceEvent() {
+    if (!isOverlayShowing) return;
+
+    const domain = location.hostname;
+    chrome.runtime.sendMessage({
+        type: 'RECORD_PATIENCE',
+        domain: domain
+    }).catch(() => { });
+
+    console.log("Patience event recorded for:", domain);
+}
+
+// Listen for page unload/visibility change to record patience
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden' && isOverlayShowing) {
+        recordPatienceEvent();
+    }
+});
+
+window.addEventListener('beforeunload', () => {
+    if (isOverlayShowing) {
+        recordPatienceEvent();
+    }
+});
 
 // Periodic check interval (30 seconds)
 const PERIODIC_CHECK_INTERVAL = 30 * 1000; // 30 seconds
@@ -308,8 +368,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 // Run initial check after page loads and start periodic checks
-setTimeout(() => {
-    checkRelevance();
+setTimeout(async () => {
+    const siteSettings = await checkSiteSettings();
+    if (!siteSettings.allowed) {
+        checkRelevance();
+    }
     // Start periodic check if extension is enabled
     chrome.storage.local.get('extensionEnabled', (data) => {
         if (data.extensionEnabled !== false) {

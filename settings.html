@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>詳細設定 - Study Focus Guard</title>
+    <link rel="stylesheet" href="settings.css">
+</head>
+
+<body>
+    <div class="settings-container">
+        <header class="header">
+            <h1>🎯 詳細設定</h1>
+            <p class="subtitle">Study Focus Guard</p>
+        </header>
+
+        <!-- タブナビゲーション -->
+        <nav class="tab-nav">
+            <button class="tab-btn active" data-tab="statistics">📊 統計</button>
+            <button class="tab-btn" data-tab="sites">🌐 サイト設定</button>
+            <button class="tab-btn" data-tab="recording">💾 記録設定</button>
+            <button class="tab-btn" data-tab="data">🗑️ データ管理</button>
+        </nav>
+
+        <!-- 統計タブ -->
+        <section id="tab-statistics" class="tab-content active">
+            <div class="stats-header">
+                <div class="period-selector">
+                    <button id="prev-period" class="nav-btn">◀</button>
+                    <span id="current-period">2026年1月</span>
+                    <button id="next-period" class="nav-btn">▶</button>
+                </div>
+                <div class="view-toggle">
+                    <button class="view-btn active" data-view="day">日別</button>
+                    <button class="view-btn" data-view="month">月別</button>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <label>判定機能:</label>
+                <select id="blocking-filter">
+                    <option value="all">ON + OFF合計</option>
+                    <option value="on">ONの時のみ</option>
+                    <option value="off">OFFの時のみ</option>
+                </select>
+            </div>
+
+            <!-- グラフエリア -->
+            <div class="chart-container">
+                <canvas id="usage-chart"></canvas>
+            </div>
+
+            <!-- 我慢回数表示 -->
+            <div class="patience-stats" id="patience-section">
+                <h3>💪 我慢回数</h3>
+                <div id="patience-count" class="stat-value">0回</div>
+            </div>
+
+            <!-- 選択された日/月の詳細 -->
+            <div class="detail-section" id="detail-section">
+                <h3 id="detail-title">日付を選択してください</h3>
+                <div class="detail-summary">
+                    <div class="detail-stat">
+                        <span class="stat-label">閲覧時間</span>
+                        <span id="detail-total" class="stat-value-small"></span>
+                    </div>
+                    <div class="detail-stat">
+                        <span class="stat-label">我慢回数</span>
+                        <span id="detail-patience" class="stat-value-small"></span>
+                    </div>
+                </div>
+                <div id="detail-list" class="detail-list">
+                    <!-- ドメインリストがここに表示 -->
+                </div>
+            </div>
+        </section>
+
+        <!-- サイト設定タブ -->
+        <section id="tab-sites" class="tab-content">
+            <div class="site-section">
+                <h3>✅ 許可サイト（警告なし）</h3>
+                <p class="section-desc">ここに追加したサイトはスコア測定・警告がスキップされます</p>
+                <div class="site-add">
+                    <input type="text" id="allowlist-input" placeholder="例: example.com">
+                    <button id="add-allowlist" class="btn btn-small">追加</button>
+                </div>
+                <ul id="allowlist" class="site-list"></ul>
+            </div>
+
+            <div class="site-section">
+                <h3>🚫 禁止サイト（完全ブロック）</h3>
+                <p class="section-desc">ここに追加したサイトは完全にブロックされます</p>
+                <div class="site-add">
+                    <input type="text" id="blocklist-input" placeholder="例: example.com">
+                    <button id="add-blocklist" class="btn btn-small">追加</button>
+                </div>
+                <ul id="blocklist" class="site-list"></ul>
+            </div>
+
+            <div class="site-section">
+                <h3>🔗 禁止パターン（URLパス）</h3>
+                <p class="section-desc">特定のパスをブロック（例: YouTube Shorts）</p>
+                <div class="site-add pattern-add">
+                    <input type="text" id="pattern-domain" placeholder="ドメイン">
+                    <input type="text" id="pattern-path" placeholder="パス（例: /shorts）">
+                    <button id="add-pattern" class="btn btn-small">追加</button>
+                </div>
+                <ul id="blocked-patterns" class="site-list"></ul>
+            </div>
+        </section>
+
+        <!-- 記録設定タブ -->
+        <section id="tab-recording" class="tab-content">
+            <div class="recording-section">
+                <h3>📊 記録設定</h3>
+
+                <label class="setting-item">
+                    <div class="setting-info">
+                        <span class="setting-title">💪 我慢回数を記録</span>
+                        <span class="setting-desc">警告を閉じずにページを離れた回数</span>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="setting-patience">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </label>
+
+                <label class="setting-item">
+                    <div class="setting-info">
+                        <span class="setting-title">🌐 閲覧サイト・時間を記録</span>
+                        <span class="setting-desc">どのサイトをどれくらい見たか</span>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="setting-browsing">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </label>
+
+                <label class="setting-item sub-setting" id="sns-setting">
+                    <div class="setting-info">
+                        <span class="setting-title">📱 SNSの時間だけ記録</span>
+                        <span class="setting-desc">Twitter, Instagram等のみ</span>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="setting-sns-only">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </label>
+
+                <div class="setting-group">
+                    <h4>🌍 地域・タイムゾーン設定</h4>
+                    <p class="section-desc">グラフ表示に使用するタイムゾーンを指定</p>
+
+                    <div class="timezone-setting">
+                        <label class="radio-option">
+                            <input type="radio" name="timezone-mode" value="auto" checked>
+                            <span>自動検出</span>
+                            <span id="auto-timezone-display" class="detected-timezone"
+                                style="margin-left:8px; color:#888; font-size:0.9em;"></span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="timezone-mode" value="region">
+                            <span>地域から選択</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="timezone-mode" value="manual">
+                            <span>手動入力 (UTCオフセット)</span>
+                        </label>
+                    </div>
+
+                    <div id="timezone-region-input" class="timezone-input-area" style="display: none;">
+                        <input type="text" id="timezone-region" list="timezone-list" placeholder="地域名で検索 (例: Tokyo)">
+                        <datalist id="timezone-list"></datalist>
+                    </div>
+
+                    <div id="timezone-manual-input" class="timezone-input-area" style="display: none;">
+                        <input type="text" id="timezone-manual" placeholder="例: +09:00">
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <button id="save-recording-settings" class="btn btn-primary">設定を保存</button>
+            </div>
+        </section>
+
+        <!-- データ管理タブ -->
+        <section id="tab-data" class="tab-content">
+            <div class="data-section">
+                <h3>📤 データエクスポート</h3>
+                <p class="section-desc">統計データをファイルとして保存します</p>
+
+                <div class="export-options">
+                    <label class="radio-option">
+                        <input type="radio" name="export-range" value="all" checked>
+                        <span>すべての期間</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="export-range" value="range">
+                        <span>期間を指定</span>
+                    </label>
+                </div>
+
+                <div class="date-range" id="export-date-range" style="display: none;">
+                    <div class="date-input">
+                        <label>開始日</label>
+                        <input type="date" id="export-start-date">
+                    </div>
+                    <div class="date-input">
+                        <label>終了日</label>
+                        <input type="date" id="export-end-date">
+                    </div>
+                </div>
+
+                <div class="export-content-options">
+                    <label class="checkbox-option">
+                        <input type="checkbox" id="export-patience" checked>
+                        <span>我慢回数データ</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" id="export-browsing" checked>
+                        <span>閲覧時間データ</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" id="export-settings" checked>
+                        <span>設定（サイト設定・記録設定・勉強項目）</span>
+                    </label>
+                </div>
+
+                <div class="export-buttons">
+                    <button id="export-json" class="btn btn-primary">📦 JSONでエクスポート</button>
+                    <div class="csv-export-group">
+                        <button id="export-csv-browsing" class="btn btn-secondary">📊 閲覧時間をCSV出力</button>
+                        <button id="export-csv-patience" class="btn btn-secondary">💪 我慢回数をCSV出力</button>
+                    </div>
+                </div>
+                <p class="export-hint">💡 CSVはExcelでピボットテーブル/グラフ作成に最適な形式です</p>
+            </div>
+
+            <div class="data-section">
+                <h3>📥 データインポート</h3>
+                <p class="section-desc">JSONファイルからデータを読み込みます</p>
+
+                <div class="import-options">
+                    <label class="radio-option">
+                        <input type="radio" name="import-mode" value="merge" checked>
+                        <span>既存データとマージ</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="import-mode" value="replace">
+                        <span>既存データを置き換え</span>
+                    </label>
+                </div>
+
+                <div class="file-input-wrapper">
+                    <input type="file" id="import-file" accept=".json" style="display: none;">
+                    <button id="import-select" class="btn btn-secondary">ファイルを選択</button>
+                    <span id="import-filename" class="filename"></span>
+                </div>
+
+                <button id="import-data" class="btn btn-primary" disabled>インポート</button>
+            </div>
+
+            <div class="data-section">
+                <h3>🗑️ データ削除</h3>
+                <p class="section-desc">指定した期間のデータを削除します</p>
+
+                <div class="date-range">
+                    <div class="date-input">
+                        <label>開始日</label>
+                        <input type="date" id="delete-start-date">
+                    </div>
+                    <div class="date-input">
+                        <label>終了日</label>
+                        <input type="date" id="delete-end-date">
+                    </div>
+                </div>
+
+                <button id="delete-range" class="btn btn-danger">選択期間を削除</button>
+
+                <div class="divider"></div>
+
+                <button id="delete-all" class="btn btn-danger-outline">すべてのデータを削除</button>
+            </div>
+        </section>
+    </div>
+
+    <script src="chart.js"></script>
+    <script src="statistics-storage.js"></script>
+    <script src="settings.js"></script>
+</body>
+
+</html>

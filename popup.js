@@ -11,6 +11,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Enter') addTopic();
     });
     document.getElementById('master-toggle').addEventListener('change', toggleExtension);
+
+    // 詳細設定ボタン
+    document.getElementById('open-settings').addEventListener('click', () => {
+        chrome.tabs.create({ url: 'settings.html' });
+    });
 });
 
 // ========== システムステータス ==========
