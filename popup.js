@@ -72,10 +72,25 @@ async function toggleExtension() {
 
 // ========== 現在のスコア取得 ==========
 async function loadCurrentScore() {
+    const scoreSection = document.getElementById('score-section');
     const scoreDisplay = document.getElementById('score-display');
     const scoreStatus = document.getElementById('score-status');
 
     try {
+        // 設定を取得してデバッグモードか確認
+        const settingsData = await chrome.storage.local.get('recordingSettings');
+        const settings = settingsData.recordingSettings || {};
+        const isDebugMode = settings.debugMode === true;
+
+        // デバッグモードがOFFの場合はスコアセクション全体を非表示
+        if (!isDebugMode) {
+            scoreSection.style.display = 'none';
+            return;
+        }
+
+        // デバッグモードがONの場合は表示
+        scoreSection.style.display = 'block';
+
         // 現在のタブを取得
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
         if (!tab || !tab.id) {
@@ -85,38 +100,40 @@ async function loadCurrentScore() {
         }
 
         // Background経由でスコアを取得
-        chrome.runtime.sendMessage({
-            type: 'GET_CURRENT_SCORE',
-            tabId: tab.id
-        }, (response) => {
-            if (chrome.runtime.lastError || !response) {
-                scoreDisplay.textContent = "---";
-                scoreStatus.textContent = "スコアなし";
-                return;
-            }
+        const scoreResponse = await chrome.runtime.sendMessage({ type: 'GET_CURRENT_SCORE', tabId: tab.id });
 
-            if (response.score !== undefined) {
-                const score = response.score;
-                const rawScore = response.rawScore || score;
-                scoreDisplay.textContent = score.toFixed(2);
+        if (chrome.runtime.lastError || !scoreResponse) {
+            scoreDisplay.textContent = "---";
+            scoreStatus.textContent = "スコアなし";
+            return;
+        }
 
-                // スコアに応じてクラス変更
-                scoreDisplay.className = '';
-                if (score >= 0.35) {
-                    scoreDisplay.classList.add('safe');
-                    scoreStatus.textContent = `OK (Raw: ${rawScore.toFixed(2)})`;
-                } else if (score >= 0.2) {
-                    scoreDisplay.classList.add('warning');
-                    scoreStatus.textContent = `注意 (Raw: ${rawScore.toFixed(2)})`;
-                } else {
-                    scoreDisplay.classList.add('danger');
-                    scoreStatus.textContent = `ブロック (Raw: ${rawScore.toFixed(2)})`;
-                }
+        if (scoreResponse.score !== undefined) {
+            const score = scoreResponse.score;
+            const rawScore = scoreResponse.rawScore || score;
+            scoreDisplay.textContent = score.toFixed(2);
+
+            // スコアに応じてクラス変更
+            scoreDisplay.className = '';
+
+            let statusText = "";
+
+            if (score >= 0.35) {
+                scoreDisplay.classList.add('safe');
+                statusText = "OK";
+            } else if (score >= 0.2) {
+                scoreDisplay.classList.add('warning');
+                statusText = "注意";
             } else {
-                scoreDisplay.textContent = "---";
-                scoreStatus.textContent = response.message || "取得待ち";
+                scoreDisplay.classList.add('danger');
+                statusText = "ブロック";
             }
-        });
+
+            scoreStatus.textContent = `${statusText} (Raw: ${rawScore.toFixed(2)})`;
+        } else {
+            scoreDisplay.textContent = "---";
+            scoreStatus.textContent = scoreResponse.message || "取得待ち";
+        }
     } catch (e) {
         console.error("Error loading score:", e);
         scoreDisplay.textContent = "---";

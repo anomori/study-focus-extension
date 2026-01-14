@@ -11,7 +11,8 @@ const StatisticsStorage = {
         hasShownInitialPrompt: false,  // 初回確認ダイアログ表示済みか
         timezoneMode: 'auto',          // タイムゾーン設定 (auto, region, manual)
         timezoneRegion: '',            // 地域名 (例: Asia/Tokyo)
-        timezoneManual: ''             // 手動オフセット (例: +09:00)
+        timezoneManual: '',            // 手動オフセット (例: +09:00)
+        debugMode: false               // デバッグ情報をポップアップに表示
     },
 
     DEFAULT_SITE_SETTINGS: {

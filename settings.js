@@ -393,12 +393,14 @@ async function initRecordingSettings() {
     const patienceEl = document.getElementById('setting-patience');
     const browsingEl = document.getElementById('setting-browsing');
     const snsOnlyEl = document.getElementById('setting-sns-only');
+    const debugModeEl = document.getElementById('setting-debug-mode');
     const snsSettingEl = document.getElementById('sns-setting');
 
     // 既存設定の反映
     patienceEl.checked = settings.recordPatienceCount;
     browsingEl.checked = settings.recordBrowsingTime;
     snsOnlyEl.checked = settings.recordSnsTimeOnly;
+    debugModeEl.checked = settings.debugMode === true;
 
     // タイムゾーン設定の反映
     const tzRadios = document.getElementsByName('timezone-mode');
@@ -458,7 +460,8 @@ async function initRecordingSettings() {
             hasShownInitialPrompt: true,
             timezoneMode,
             timezoneRegion: document.getElementById('timezone-region').value.trim(),
-            timezoneManual: document.getElementById('timezone-manual').value.trim()
+            timezoneManual: document.getElementById('timezone-manual').value.trim(),
+            debugMode: debugModeEl.checked
         };
 
         await StatisticsStorage.saveRecordingSettings(newSettings);
