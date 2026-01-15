@@ -318,14 +318,23 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     (async () => {
       try {
         await createOffscreenDocument();
-        const response = await chrome.runtime.sendMessage({
+
+        // タイムアウト付きでoffscreenにメッセージを送信
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Offscreen response timeout')), 10000)
+        );
+
+        const messagePromise = chrome.runtime.sendMessage({
           ...message,
           target: 'offscreen'
         });
-        sendResponse(response);
+
+        const response = await Promise.race([messagePromise, timeoutPromise]);
+        sendResponse(response || { score: 0 });
       } catch (error) {
         console.error('Error forwarding to offscreen:', error);
-        sendResponse({ error: error.message });
+        // エラー時はスコア0を返してcontent.jsがクラッシュしないようにする
+        sendResponse({ score: 0, error: error.message });
       }
     })();
     return true;
