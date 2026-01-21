@@ -319,9 +319,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       try {
         await createOffscreenDocument();
 
-        // タイムアウト付きでoffscreenにメッセージを送信
+        // タイムアウト付きでoffscreenにメッセージを送信（初回モデルロード考慮で30秒）
         const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Offscreen response timeout')), 10000)
+          setTimeout(() => reject(new Error('Offscreen response timeout')), 30000)
         );
 
         const messagePromise = chrome.runtime.sendMessage({
