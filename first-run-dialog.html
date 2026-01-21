@@ -3,16 +3,25 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>データ記録の設定 - Study Focus Guard</title>
+    <title data-i18n="firstrun_title">データ記録の設定 - Study Focus Guard</title>
     <link rel="stylesheet" href="first-run-dialog.css">
 </head>
 
 <body>
     <div class="dialog-container">
+        <!-- 言語選択を右上に配置 -->
+        <div class="language-selector-wrapper" style="position: absolute; top: 15px; right: 15px;">
+            <select id="language-select"
+                style="padding: 4px; border-radius: 4px; background: #eee; border: 1px solid #ccc;">
+                <option value="ja">日本語</option>
+                <option value="en">English</option>
+            </select>
+        </div>
+
         <div class="dialog-header">
             <div class="icon">📊</div>
-            <h1>データの記録を有効にしますか？</h1>
-            <p class="subtitle">統計機能を使って、勉強の進捗を確認できます</p>
+            <h1 data-i18n="firstrun_title">データの記録を有効にしますか？</h1>
+            <p class="subtitle" data-i18n="firstrun_subtitle">統計機能を使って、勉強の進捗を確認できます</p>
         </div>
 
         <div class="dialog-content">
@@ -21,8 +30,8 @@
                     <div class="option-info">
                         <span class="option-icon">💪</span>
                         <div class="option-text">
-                            <span class="option-title">我慢回数を記録する</span>
-                            <span class="option-desc">警告を閉じずにページを離れた回数を記録</span>
+                            <span class="option-title" data-i18n="firstrun_patience_title">我慢回数を記録する</span>
+                            <span class="option-desc" data-i18n="firstrun_patience_desc">警告を閉じずにページを離れた回数を記録</span>
                         </div>
                     </div>
                     <label class="toggle-switch">
@@ -35,8 +44,8 @@
                     <div class="option-info">
                         <span class="option-icon">🌐</span>
                         <div class="option-text">
-                            <span class="option-title">閲覧サイト・時間を記録する</span>
-                            <span class="option-desc">どのサイトをどれくらい見たかを記録</span>
+                            <span class="option-title" data-i18n="firstrun_browsing_title">閲覧サイト・時間を記録する</span>
+                            <span class="option-desc" data-i18n="firstrun_browsing_desc">どのサイトをどれくらい見たかを記録</span>
                         </div>
                     </div>
                     <label class="toggle-switch">
@@ -49,8 +58,9 @@
                     <div class="option-info">
                         <span class="option-icon">📱</span>
                         <div class="option-text">
-                            <span class="option-title">SNSの時間だけ記録する</span>
-                            <span class="option-desc">Twitter, Instagram, TikTokなどのみ</span>
+                            <span class="option-title" data-i18n="firstrun_sns_title">SNSの時間だけ記録する</span>
+                            <span class="option-desc" data-i18n="firstrun_sns_desc">Twitter, Instagram,
+                                TikTokなどのみ</span>
                         </div>
                     </div>
                     <label class="toggle-switch">
@@ -62,16 +72,17 @@
 
             <div class="privacy-note">
                 <span class="privacy-icon">🔒</span>
-                <span>データはすべてローカルに保存され、外部には送信されません。いつでも設定を変更・削除できます。</span>
+                <span data-i18n="firstrun_privacy">データはすべてローカルに保存され、外部には送信されません。いつでも設定を変更・削除できます。</span>
             </div>
         </div>
 
         <div class="dialog-actions">
-            <button id="btn-skip" class="btn btn-secondary">記録しない</button>
-            <button id="btn-enable" class="btn btn-primary">選択した項目を記録する</button>
+            <button id="btn-skip" class="btn btn-secondary" data-i18n="firstrun_skip">記録しない</button>
+            <button id="btn-enable" class="btn btn-primary" data-i18n="firstrun_enable">選択した項目を記録する</button>
         </div>
     </div>
 
+    <script src="i18n.js"></script>
     <script src="statistics-storage.js"></script>
     <script src="first-run-dialog.js"></script>
 </body>

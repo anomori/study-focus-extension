@@ -1,13 +1,48 @@
 // settings.js
 // 詳細設定ページのロジック
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // i18n初期化を最初に行う
+    await I18n.init();
+
+    // 言語セレクタの初期値を設定
+    const languageSelect = document.getElementById('language-select');
+    if (languageSelect) {
+        languageSelect.value = I18n.getLanguage();
+    }
+
     initTabs();
     initStatistics();
     initSiteSettings();
     initRecordingSettings();
     initDataManagement();
+    initLanguageSelector();
 });
+
+// ========== 言語設定 ==========
+function initLanguageSelector() {
+    const languageSelect = document.getElementById('language-select');
+    if (!languageSelect) return;
+
+    languageSelect.addEventListener('change', async () => {
+        const newLang = languageSelect.value;
+        await I18n.setLanguage(newLang);
+        I18n.translatePage();
+
+        // 動的コンテンツの再翻訳
+        updateChartLabels();
+        await loadSiteSettings();
+    });
+}
+
+// グラフラベルの更新
+function updateChartLabels() {
+    if (usageChart) {
+        usageChart.data.datasets[0].label = I18n.getMessage('chart_usage_time');
+        usageChart.update('none');
+    }
+    updatePeriodDisplay();
+}
 
 // ========== タブ管理 ==========
 function initTabs() {
@@ -75,6 +110,22 @@ function initStatistics() {
     updateChart();
 }
 
+function updatePeriodDisplay() {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1;
+
+    let periodText;
+    if (currentView === 'day') {
+        periodText = I18n.getMessage('year_month_format', {
+            year: year,
+            month: I18n.getMessage(`month_${month}`)
+        });
+    } else {
+        periodText = I18n.getMessage('year_format', { year: year });
+    }
+    document.getElementById('current-period').textContent = periodText;
+}
+
 async function updateChart() {
     const filter = document.getElementById('blocking-filter').value;
     const filterBlocking = filter === 'all' ? null : filter === 'on';
@@ -83,10 +134,7 @@ async function updateChart() {
     const timezone = await getTimezoneSetting();
 
     // 期間表示を更新
-    const periodText = currentView === 'day'
-        ? `${currentDate.getFullYear()}年${currentDate.getMonth() + 1}月`
-        : `${currentDate.getFullYear()}年`;
-    document.getElementById('current-period').textContent = periodText;
+    updatePeriodDisplay();
 
     // データ取得
     let startDate, endDate;
@@ -108,7 +156,7 @@ async function updateChart() {
     });
 
     // 我慢回数を表示
-    document.getElementById('patience-count').textContent = `${stats.totals.patienceCount}回`;
+    document.getElementById('patience-count').textContent = I18n.getMessage('patience_count', { count: stats.totals.patienceCount });
 
     // グラフデータを準備
     const labels = [];
@@ -127,10 +175,9 @@ async function updateChart() {
         }
     } else {
         // 月別: 12ヶ月
-        const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
-        for (let m = 0; m < 12; m++) {
-            const monthStr = `${currentDate.getFullYear()}-${String(m + 1).padStart(2, '0')}`;
-            labels.push(monthNames[m]);
+        for (let m = 1; m <= 12; m++) {
+            const monthStr = `${currentDate.getFullYear()}-${String(m).padStart(2, '0')}`;
+            labels.push(I18n.getMessage(`month_${m}`));
             keys.push(monthStr);
             data.push(browsingData[monthStr] ? browsingData[monthStr].totalTime / 1000 / 60 : 0);
         }
@@ -158,7 +205,7 @@ function renderChart(labels, data, stats, keys) {
         data: {
             labels: labels,
             datasets: [{
-                label: '使用時間（分）',
+                label: I18n.getMessage('chart_usage_time'),
                 data: data,
                 backgroundColor: backgroundColors,
                 borderColor: 'rgba(0, 217, 255, 1)',
@@ -204,9 +251,9 @@ function renderChart(labels, data, stats, keys) {
                         label: (context) => {
                             const minutes = context.raw;
                             if (minutes >= 60) {
-                                return `${Math.floor(minutes / 60)}時間${Math.round(minutes % 60)}分`;
+                                return `${Math.floor(minutes / 60)}h ${Math.round(minutes % 60)}m`;
                             }
-                            return `${Math.round(minutes)}分`;
+                            return `${Math.round(minutes)}m`;
                         }
                     }
                 }
@@ -248,9 +295,9 @@ function showDetailForIndex(key, stats) {
 
     if (!key) {
         // 全体集計
-        detailTitle.textContent = document.getElementById('current-period').textContent + '（合計）';
+        detailTitle.textContent = document.getElementById('current-period').textContent + I18n.getMessage('total_suffix');
         detailTotal.textContent = StatisticsStorage.formatDuration(stats.totals.totalBrowsingTime);
-        detailPatience.textContent = `${stats.totals.patienceCount}回`;
+        detailPatience.textContent = I18n.getMessage('patience_count', { count: stats.totals.patienceCount });
 
         renderDomainList(stats.totals.browsingByDomain, detailList);
         return;
@@ -264,16 +311,21 @@ function showDetailForIndex(key, stats) {
     if (currentView === 'day') {
         const [y, m, d] = key.split('-').map(Number);
         const dateObj = new Date(y, m - 1, d);
-        const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
-        detailTitle.textContent = `${m}月${d}日（${dayNames[dateObj.getDay()]}）`;
+        const dayNames = I18n.getMessage('day_names');
+        const monthName = I18n.getMessage(`month_${m}`);
+        detailTitle.textContent = I18n.getMessage('date_format', {
+            month: monthName,
+            day: d,
+            weekday: dayNames[dateObj.getDay()]
+        });
     } else {
         const [y, m] = key.split('-').map(Number);
-        detailTitle.textContent = `${m}月`;
+        detailTitle.textContent = I18n.getMessage(`month_${m}`);
     }
 
     // 値の設定
     detailTotal.textContent = StatisticsStorage.formatDuration(browsingItem.totalTime);
-    detailPatience.textContent = `${patienceItem.count}回`;
+    detailPatience.textContent = I18n.getMessage('patience_count', { count: patienceItem.count });
 
     // ドメイン別リストの生成
     const domainData = Object.entries(browsingItem.domains)
@@ -285,7 +337,7 @@ function showDetailForIndex(key, stats) {
 
 function renderDomainList(domainData, container) {
     if (domainData.length === 0) {
-        container.innerHTML = '<div class="no-data"><div class="no-data-icon">📭</div><p>データがありません</p></div>';
+        container.innerHTML = `<div class="no-data"><div class="no-data-icon">📭</div><p>${I18n.getMessage('no_data')}</p></div>`;
         return;
     }
 
@@ -339,13 +391,14 @@ async function initSiteSettings() {
 
 async function loadSiteSettings() {
     const settings = await StatisticsStorage.getSiteSettings();
+    const removeText = I18n.getMessage('remove');
 
     // 許可リスト
     const allowlistEl = document.getElementById('allowlist');
     allowlistEl.innerHTML = settings.allowlist.map(domain => `
         <li>
             <span class="domain-text">${domain}</span>
-            <button class="remove-btn" data-domain="${domain}" data-list="allowlist">削除</button>
+            <button class="remove-btn" data-domain="${domain}" data-list="allowlist">${removeText}</button>
         </li>
     `).join('');
 
@@ -354,7 +407,7 @@ async function loadSiteSettings() {
     blocklistEl.innerHTML = settings.blocklist.map(domain => `
         <li>
             <span class="domain-text">${domain}</span>
-            <button class="remove-btn" data-domain="${domain}" data-list="blocklist">削除</button>
+            <button class="remove-btn" data-domain="${domain}" data-list="blocklist">${removeText}</button>
         </li>
     `).join('');
 
@@ -363,7 +416,7 @@ async function loadSiteSettings() {
     patternsEl.innerHTML = settings.blockedPatterns.map(p => `
         <li>
             <span class="domain-text">${p.domain}${p.pathPattern}</span>
-            <button class="remove-btn" data-domain="${p.domain}" data-path="${p.pathPattern}" data-list="pattern">削除</button>
+            <button class="remove-btn" data-domain="${p.domain}" data-path="${p.pathPattern}" data-list="pattern">${removeText}</button>
         </li>
     `).join('');
 
@@ -467,7 +520,7 @@ async function initRecordingSettings() {
         await StatisticsStorage.saveRecordingSettings(newSettings);
 
         // グラフ更新のためにリロード
-        alert('設定を保存しました。反映のためページを再読み込みします。');
+        alert(I18n.getMessage('settings_saved_reload'));
         location.reload();
     });
 }
@@ -583,7 +636,7 @@ function initDataManagement() {
         const fileInput = document.getElementById('import-file');
         const file = fileInput.files[0];
         if (!file) {
-            alert('ファイルを選択してください');
+            alert(I18n.getMessage('alert_select_file'));
             return;
         }
 
@@ -595,29 +648,31 @@ function initDataManagement() {
 
             // バリデーション
             if (!data.version) {
-                alert('無効なファイル形式です。Study Focus Guardのエクスポートファイルを選択してください。');
+                alert(I18n.getMessage('alert_invalid_file'));
                 return;
             }
 
-            const modeText = mode === 'merge' ? 'マージ' : '置き換え';
-            if (!confirm(`データを${modeText}モードでインポートしますか？`)) {
+            const confirmMsg = mode === 'merge'
+                ? I18n.getMessage('alert_import_confirm_merge')
+                : I18n.getMessage('alert_import_confirm_replace');
+            if (!confirm(confirmMsg)) {
                 return;
             }
 
             const results = await StatisticsStorage.importData(data, mode);
 
-            let message = 'インポート完了\n';
+            let message = I18n.getMessage('alert_import_complete') + '\n';
             if (results.patienceImported > 0) {
-                message += `- 我慢回数: ${results.patienceImported}件\n`;
+                message += `- ${I18n.getMessage('alert_patience_imported', { count: results.patienceImported })}\n`;
             }
             if (results.browsingImported > 0) {
-                message += `- 閲覧記録: ${results.browsingImported}件\n`;
+                message += `- ${I18n.getMessage('alert_browsing_imported', { count: results.browsingImported })}\n`;
             }
             if (results.studyTopicsImported > 0) {
-                message += `- 勉強項目: ${results.studyTopicsImported}件\n`;
+                message += `- ${I18n.getMessage('alert_topics_imported', { count: results.studyTopicsImported })}\n`;
             }
             if (results.settingsImported) {
-                message += `- 設定: インポート済み\n`;
+                message += `- ${I18n.getMessage('alert_settings_imported')}\n`;
             }
 
             alert(message);
@@ -630,7 +685,7 @@ function initDataManagement() {
 
         } catch (e) {
             console.error('Import error:', e);
-            alert('ファイルの読み込みに失敗しました。\n' + e.message);
+            alert(I18n.getMessage('alert_import_error') + '\n' + e.message);
         }
     });
 
@@ -640,28 +695,28 @@ function initDataManagement() {
         const endDate = document.getElementById('delete-end-date').value;
 
         if (!startDate || !endDate) {
-            alert('開始日と終了日を選択してください');
+            alert(I18n.getMessage('alert_select_dates'));
             return;
         }
 
         if (startDate > endDate) {
-            alert('開始日は終了日より前の日付を選択してください');
+            alert(I18n.getMessage('alert_invalid_date_range'));
             return;
         }
 
-        if (confirm(`${startDate} から ${endDate} までのデータを削除しますか？`)) {
+        if (confirm(I18n.getMessage('alert_delete_confirm', { start: startDate, end: endDate }))) {
             const result = await StatisticsStorage.deleteDataInRange(startDate, endDate);
-            alert(`削除完了\n- 我慢記録: ${result.deletedPatienceCount}件\n- 閲覧記録: ${result.deletedBrowsingCount}件`);
+            alert(`${I18n.getMessage('alert_delete_complete')}\n- ${I18n.getMessage('alert_deleted_patience', { count: result.deletedPatienceCount })}\n- ${I18n.getMessage('alert_deleted_browsing', { count: result.deletedBrowsingCount })}`);
             updateChart();
         }
     });
 
     // 全削除
     document.getElementById('delete-all').addEventListener('click', async () => {
-        if (confirm('本当にすべてのデータを削除しますか？\nこの操作は取り消せません。')) {
-            if (confirm('最終確認です。すべての統計データが削除されます。')) {
+        if (confirm(I18n.getMessage('alert_delete_all_confirm1'))) {
+            if (confirm(I18n.getMessage('alert_delete_all_confirm2'))) {
                 await StatisticsStorage.deleteAllData();
-                alert('すべてのデータを削除しました');
+                alert(I18n.getMessage('alert_delete_all_complete'));
                 updateChart();
             }
         }

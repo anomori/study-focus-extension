@@ -11,6 +11,17 @@ const DISTRACTION_DOMAINS = [
     'tiktok.com', 'netflix.com', 'primevideo.com', 'hulu.com', 'nicovideo.jp'
 ];
 
+// Initialize i18n
+let i18nReady = false;
+if (typeof I18n !== 'undefined') {
+    I18n.init().then(() => {
+        i18nReady = true;
+        console.log("Study Focus Guard: i18n initialized in content script.");
+    });
+} else {
+    console.warn("Study Focus Guard: I18n module not found.");
+}
+
 // 1. Check site settings (Allowlist/Blocklist)
 async function checkSiteSettings() {
     try {
@@ -45,7 +56,14 @@ async function checkImmediateBlocks() {
 
         // If blocked, show block screen
         if (siteSettings.blocked) {
-            blockContent("ブロック中", `${siteSettings.reason || 'このサイト'}は勉強中にブロックされています。`);
+            // Check i18n readiness
+            if (!i18nReady && typeof I18n !== 'undefined') await I18n.init();
+
+            const title = typeof I18n !== 'undefined' ? I18n.getMessage('block_title') : "ブロック中";
+            const messageTemplate = typeof I18n !== 'undefined' ? I18n.getMessage('block_message') : "{site}は勉強中にブロックされています。";
+            const message = messageTemplate.replace('{site}', siteSettings.reason || 'このサイト');
+
+            blockContent(title, message);
             return;
         }
     } catch (e) {
@@ -87,7 +105,13 @@ async function onUrlChange() {
 
         // If blocked, show block screen
         if (siteSettings.blocked) {
-            blockContent("ブロック中", `${siteSettings.reason || 'このサイト'}は勉強中にブロックされています。`);
+            if (!i18nReady && typeof I18n !== 'undefined') await I18n.init();
+
+            const title = typeof I18n !== 'undefined' ? I18n.getMessage('block_title') : "ブロック中";
+            const messageTemplate = typeof I18n !== 'undefined' ? I18n.getMessage('block_message') : "{site}は勉強中にブロックされています。";
+            const message = messageTemplate.replace('{site}', siteSettings.reason || 'このサイト');
+
+            blockContent(title, message);
         } else {
             removeDistractionOverlay();
             checkRelevance();
@@ -285,6 +309,8 @@ async function checkRelevance() {
 async function showDistractionOverlay(score) {
     if (document.getElementById('distraction-overlay')) return;
 
+    if (!i18nReady && typeof I18n !== 'undefined') await I18n.init();
+
     isOverlayShowing = true;
 
     // デバッグモード設定を取得
@@ -298,16 +324,24 @@ async function showDistractionOverlay(score) {
     }
 
     // デバッグモードの場合のみスコアを表示
-    const scoreText = isDebugMode ? `<p>類似度スコア: ${score.toFixed(2)} (判定: 低)</p>` : '';
+    let scoreText = '';
+    if (isDebugMode) {
+        const template = typeof I18n !== 'undefined' ? I18n.getMessage('overlay_score') : '類似度スコア: {score} (判定: 低)';
+        scoreText = `<p>${template.replace('{score}', score.toFixed(2))}</p>`;
+    }
+
+    const title = typeof I18n !== 'undefined' ? I18n.getMessage('overlay_title') : '⚠️ 勉強に関係ありますか？';
+    const message = typeof I18n !== 'undefined' ? I18n.getMessage('overlay_message') : '登録された勉強内容と関連が薄い可能性があります。';
+    const dismissText = typeof I18n !== 'undefined' ? I18n.getMessage('overlay_dismiss') : '関係ある（閉じる）';
 
     const overlay = document.createElement('div');
     overlay.id = 'distraction-overlay';
     overlay.innerHTML = `
         <div class="distraction-content">
-            <h2>⚠️ 勉強に関係ありますか？</h2>
+            <h2>${title}</h2>
             ${scoreText}
-            <p>登録された勉強内容と関連が薄い可能性があります。</p>
-            <button id="dismiss-overlay">関係ある（閉じる）</button>
+            <p>${message}</p>
+            <button id="dismiss-overlay">${dismissText}</button>
             <div class="annoying-element">🥺</div>
         </div>
     `;

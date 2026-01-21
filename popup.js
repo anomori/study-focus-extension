@@ -1,6 +1,8 @@
 // popup.js
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    await I18n.init();
+
     loadSettings();
     loadTopics();
     checkSystemStatus();
@@ -21,25 +23,25 @@ document.addEventListener('DOMContentLoaded', () => {
 // ========== システムステータス ==========
 function checkSystemStatus() {
     const statusEl = document.getElementById('system-status');
-    statusEl.textContent = "起動中...";
+    statusEl.textContent = I18n.getMessage('system_starting');
     statusEl.style.color = "orange";
 
     chrome.runtime.sendMessage({ target: 'offscreen', type: 'CHECK_STATUS' }, (response) => {
         if (chrome.runtime.lastError) {
-            statusEl.textContent = "エラー (Reopen)";
+            statusEl.textContent = I18n.getMessage('system_error');
             statusEl.style.color = "red";
             console.error(chrome.runtime.lastError);
             return;
         }
 
         if (response && response.loaded) {
-            statusEl.textContent = "準備完了 (AI Loaded)";
+            statusEl.textContent = I18n.getMessage('system_ready');
             statusEl.style.color = "#00ff88";
         } else if (response && response.error) {
-            statusEl.textContent = "エラー: " + response.error;
+            statusEl.textContent = "Error: " + response.error;
             statusEl.style.color = "red";
         } else {
-            statusEl.textContent = "モデル読込中...";
+            statusEl.textContent = I18n.getMessage('system_loading_model');
             statusEl.style.color = "orange";
             setTimeout(checkSystemStatus, 2000);
         }
@@ -95,7 +97,7 @@ async function loadCurrentScore() {
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
         if (!tab || !tab.id) {
             scoreDisplay.textContent = "---";
-            scoreStatus.textContent = "タブ情報なし";
+            scoreStatus.textContent = I18n.getMessage('score_no_tab');
             return;
         }
 
@@ -104,7 +106,7 @@ async function loadCurrentScore() {
 
         if (chrome.runtime.lastError || !scoreResponse) {
             scoreDisplay.textContent = "---";
-            scoreStatus.textContent = "スコアなし";
+            scoreStatus.textContent = I18n.getMessage('score_none');
             return;
         }
 
@@ -120,24 +122,24 @@ async function loadCurrentScore() {
 
             if (score >= 0.35) {
                 scoreDisplay.classList.add('safe');
-                statusText = "OK";
+                statusText = I18n.getMessage('score_ok');
             } else if (score >= 0.2) {
                 scoreDisplay.classList.add('warning');
-                statusText = "注意";
+                statusText = I18n.getMessage('score_warning');
             } else {
                 scoreDisplay.classList.add('danger');
-                statusText = "ブロック";
+                statusText = I18n.getMessage('score_block');
             }
 
             scoreStatus.textContent = `${statusText} (Raw: ${rawScore.toFixed(2)})`;
         } else {
             scoreDisplay.textContent = "---";
-            scoreStatus.textContent = scoreResponse.message || "取得待ち";
+            scoreStatus.textContent = scoreResponse.message || I18n.getMessage('score_waiting');
         }
     } catch (e) {
         console.error("Error loading score:", e);
         scoreDisplay.textContent = "---";
-        scoreStatus.textContent = "エラー";
+        scoreStatus.textContent = I18n.getMessage('score_error');
     }
 }
 
@@ -204,6 +206,8 @@ function renderTopics(topics) {
     const list = document.getElementById('topic-list');
     list.innerHTML = '';
 
+    const removeText = I18n.getMessage('remove');
+
     topics.forEach(item => {
         const topicName = typeof item === 'string' ? item : item.topic;
         const enabled = typeof item === 'string' ? true : item.enabled;
@@ -239,7 +243,7 @@ function renderTopics(topics) {
 
         // 削除ボタン
         const removeBtn = document.createElement('button');
-        removeBtn.textContent = '削除';
+        removeBtn.textContent = removeText;
         removeBtn.className = 'remove-btn';
         removeBtn.onclick = () => removeTopic(topicName);
 

@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Study Focus Guard</title>
+    <title data-i18n="popup_title">Study Focus Guard</title>
     <style>
         body {
             width: 320px;
@@ -258,17 +258,17 @@
 </head>
 
 <body>
-    <h2>🎯 勉強の脱線防止</h2>
+    <h2 data-i18n="popup_title">🎯 勉強の脱線防止</h2>
 
     <!-- スコア表示 -->
     <div id="score-section">
         <div id="score-display" class="safe">---</div>
-        <div id="score-status">スコアを取得中...</div>
+        <div id="score-status" data-i18n="score_loading">スコアを取得中...</div>
     </div>
 
     <!-- 拡張機能ON/OFF -->
     <div id="master-toggle-section">
-        <span>🛡️ 判定・ブロック機能</span>
+        <span data-i18n="blocking_toggle">🛡️ 判定・ブロック機能</span>
         <label class="toggle-switch">
             <input type="checkbox" id="master-toggle" checked>
             <span class="toggle-slider"></span>
@@ -276,13 +276,13 @@
     </div>
 
     <div id="status">
-        <span>システム: </span><span id="system-status">準備中...</span>
+        <span data-i18n="system_label">システム: </span><span id="system-status" data-i18n="system_preparing">準備中...</span>
     </div>
 
-    <h3>📚 勉強する内容</h3>
+    <h3 data-i18n="study_topics_title">📚 勉強する内容</h3>
     <div id="add-section">
-        <input type="text" id="new-topic" placeholder="例: 線形代数, 英語">
-        <button id="add-btn">追加</button>
+        <input type="text" id="new-topic" data-i18n-placeholder="topic_placeholder" placeholder="例: 線形代数, 英語">
+        <button id="add-btn" data-i18n="add">追加</button>
     </div>
 
     <ul id="topic-list">
@@ -291,7 +291,7 @@
 
     <!-- 詳細設定ボタン -->
     <div id="settings-section" style="margin-top: 16px; text-align: center;">
-        <button id="open-settings" style="
+        <button id="open-settings" data-i18n="settings_button" style="
             width: 100%;
             padding: 10px;
             background: linear-gradient(135deg, #2a3a5c 0%, #2a5090 100%);
@@ -304,6 +304,7 @@
         ">⚙️ 詳細設定・統計を見る</button>
     </div>
 
+    <script src="i18n.js"></script>
     <script src="popup.js"></script>
 </body>
 

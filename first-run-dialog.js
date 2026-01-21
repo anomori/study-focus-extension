@@ -1,6 +1,21 @@
 // first-run-dialog.js
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // i18n初期化
+    if (typeof I18n !== 'undefined') {
+        await I18n.init();
+
+        // 言語セレクタの初期化
+        const languageSelect = document.getElementById('language-select');
+        if (languageSelect) {
+            languageSelect.value = I18n.getLanguage();
+            languageSelect.addEventListener('change', async () => {
+                await I18n.setLanguage(languageSelect.value);
+                I18n.translatePage();
+            });
+        }
+    }
+
     const recordPatience = document.getElementById('record-patience');
     const recordBrowsing = document.getElementById('record-browsing');
     const recordSnsOnly = document.getElementById('record-sns-only');
