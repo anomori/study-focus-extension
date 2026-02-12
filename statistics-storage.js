@@ -360,6 +360,43 @@ const StatisticsStorage = {
             .map(([domain, time]) => ({ domain, time }));
     },
 
+    // ========== 自動パージ ==========
+    async purgeOldData(retentionDays = 90) {
+        try {
+            const cutoffDate = new Date();
+            cutoffDate.setDate(cutoffDate.getDate() - retentionDays);
+            const cutoffStr = cutoffDate.toISOString().split('T')[0]; // YYYY-MM-DD
+
+            const browsingData = await chrome.storage.local.get('stats_browsing');
+            const patienceData = await chrome.storage.local.get('stats_patience');
+
+            let sessions = browsingData.stats_browsing || [];
+            let events = patienceData.stats_patience || [];
+
+            const originalBrowsingCount = sessions.length;
+            const originalPatienceCount = events.length;
+
+            sessions = sessions.filter(s => s.date >= cutoffStr);
+            events = events.filter(e => e.date >= cutoffStr);
+
+            const browsingPurged = originalBrowsingCount - sessions.length;
+            const patiencePurged = originalPatienceCount - events.length;
+
+            if (browsingPurged > 0 || patiencePurged > 0) {
+                await chrome.storage.local.set({
+                    stats_browsing: sessions,
+                    stats_patience: events
+                });
+                console.log(`[AutoPurge] Purged ${browsingPurged} browsing, ${patiencePurged} patience records (>${retentionDays} days old)`);
+            }
+
+            return { browsingPurged, patiencePurged };
+        } catch (e) {
+            console.error('[AutoPurge] Error:', e);
+            return { browsingPurged: 0, patiencePurged: 0 };
+        }
+    },
+
     // ========== データ削除 ==========
     async deleteDataInRange(startDate, endDate) {
         const patienceData = await chrome.storage.local.get('stats_patience');

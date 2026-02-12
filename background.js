@@ -39,12 +39,48 @@ async function checkFirstRunDialog() {
   }
 }
 
+// Auto-purge old statistics data (>90 days)
+async function purgeOldStats() {
+  try {
+    const RETENTION_DAYS = 90;
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - RETENTION_DAYS);
+    const cutoffStr = cutoffDate.toISOString().split('T')[0];
+
+    const browsingData = await chrome.storage.local.get('stats_browsing');
+    const patienceData = await chrome.storage.local.get('stats_patience');
+
+    let sessions = browsingData.stats_browsing || [];
+    let events = patienceData.stats_patience || [];
+
+    const ob = sessions.length;
+    const op = events.length;
+
+    sessions = sessions.filter(s => s.date >= cutoffStr);
+    events = events.filter(e => e.date >= cutoffStr);
+
+    if (ob !== sessions.length || op !== events.length) {
+      await chrome.storage.local.set({
+        stats_browsing: sessions,
+        stats_patience: events
+      });
+      console.log(`[AutoPurge] Purged ${ob - sessions.length} browsing, ${op - events.length} patience records (>${RETENTION_DAYS} days old)`);
+    }
+  } catch (e) {
+    console.error('[AutoPurge] Error:', e);
+  }
+}
+
 // Ensure the offscreen document is created when the extension is installed or starts
 chrome.runtime.onInstalled.addListener(() => {
   createOffscreenDocument();
   checkFirstRunDialog();
+  purgeOldStats();
 });
-chrome.runtime.onStartup.addListener(createOffscreenDocument);
+chrome.runtime.onStartup.addListener(() => {
+  createOffscreenDocument();
+  purgeOldStats();
+});
 
 // Clean up tab scores and sessions when tab is closed
 chrome.tabs.onRemoved.addListener(async (tabId) => {
