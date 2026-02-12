@@ -16,7 +16,12 @@ const StatisticsStorage = {
     },
 
     DEFAULT_SITE_SETTINGS: {
-        allowlist: [],  // 許可サイト（スコア測定・警告なし）
+        allowlist: [  // 許可サイト（スコア測定・警告なし）- デフォルトで信頼できる教育・政府関連ドメイン
+            'go.jp',      // 政府機関（例: mext.go.jp）
+            'ac.jp',      // 教育機関（例: u-tokyo.ac.jp）
+            'ed.jp',      // 小中高などの教育機関
+            'lg.jp'       // 地方公共団体
+        ],
         blocklist: [    // 禁止サイト（デフォルト）
             'instagram.com',
             'www.instagram.com'
@@ -68,10 +73,18 @@ const StatisticsStorage = {
         if (!domain) return false;
 
         const settings = await this.getSiteSettings();
-        return settings.allowlist.some(allowed =>
-            domain === allowed || domain === 'www.' + allowed ||
-            allowed === domain || allowed === 'www.' + domain
-        );
+        return settings.allowlist.some(allowed => {
+            // Exact match or with www prefix
+            if (domain === allowed || domain === 'www.' + allowed ||
+                allowed === domain || allowed === 'www.' + domain) {
+                return true;
+            }
+            // Suffix match (e.g., mext.go.jp matches go.jp)
+            if (domain.endsWith('.' + allowed)) {
+                return true;
+            }
+            return false;
+        });
     },
 
     async isBlocked(url) {

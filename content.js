@@ -25,17 +25,28 @@ if (typeof I18n !== 'undefined') {
 // 1. Check site settings (Allowlist/Blocklist)
 async function checkSiteSettings() {
     try {
+        console.log('[checkSiteSettings] Sending CHECK_SITE_SETTINGS message for:', window.location.href);
         const response = await chrome.runtime.sendMessage({
             type: 'CHECK_SITE_SETTINGS',
             url: window.location.href
         });
+        console.log('[checkSiteSettings] Response received:', response);
+
+        // Display debug info in page console (easier than service worker console)
+        if (response.debug) {
+            console.log('🔍 [Site Check Debug]');
+            console.log('  Domain:', response.debug.domain);
+            console.log('  Allowlist:', response.debug.allowlist);
+            console.log('  Match Results:', response.debug.matches);
+        }
+
         return response || { allowed: false, blocked: false };
     } catch (e) {
         if (e.message && e.message.includes('Extension context invalidated')) {
             console.log('Context invalidated. Stopping checks.');
             return { allowed: false, blocked: false };
         }
-        console.error('Error checking site settings:', e);
+        console.error('[checkSiteSettings] Error:', e);
         return { allowed: false, blocked: false };
     }
 }
@@ -153,14 +164,19 @@ function blockContent(title, message) {
 // 3. Similarity Check
 async function checkRelevance() {
     try {
+        console.log('[checkRelevance] Starting relevance check...');
+
         // Check if check feature is enabled
         const settings = await chrome.storage.local.get('checkFeatureEnabled');
+        console.log('[checkRelevance] Check feature enabled:', settings.checkFeatureEnabled);
+
         if (settings.checkFeatureEnabled === false) {
             console.log("Check feature disabled. Skipping check.");
             return;
         }
 
         // Check site settings
+        console.log('[checkRelevance] About to call checkSiteSettings()...');
         const siteSettings = await checkSiteSettings();
         if (siteSettings.allowed) {
             console.log("Site is allowlisted. Skipping relevance check.");

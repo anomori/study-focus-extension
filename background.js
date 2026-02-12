@@ -233,7 +233,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       try {
         const data = await chrome.storage.local.get('siteSettings');
         const settings = data.siteSettings || {
-          allowlist: [],
+          allowlist: ['go.jp', 'ac.jp', 'ed.jp', 'lg.jp'],  // デフォルトで政府機関・教育機関・地方自治体を許可
           blocklist: ['instagram.com', 'www.instagram.com'],
           blockedPatterns: [
             { domain: 'youtube.com', pathPattern: '/shorts' },
@@ -245,10 +245,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         const urlObj = new URL(url);
         const domain = urlObj.hostname.replace(/^www\./, '');
 
-        // Check allowlist
-        const isAllowed = settings.allowlist.some(allowed =>
-          domain === allowed || domain === 'www.' + allowed
-        );
+        // Check allowlist (supports both exact match and suffix match for domains like .go.jp, .ac.jp)
+        const isAllowed = settings.allowlist.some(allowed => {
+          // Exact match or with www prefix
+          if (domain === allowed || domain === 'www.' + allowed) {
+            return true;
+          }
+          // Suffix match (e.g., mext.go.jp matches go.jp)
+          if (domain.endsWith('.' + allowed)) {
+            return true;
+          }
+          return false;
+        });
 
         if (isAllowed) {
           sendResponse({ allowed: true, blocked: false });

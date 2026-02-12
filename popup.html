@@ -111,6 +111,12 @@
             transition: 0.3s;
         }
 
+        /* Prevent animation on load */
+        .preload .toggle-slider,
+        .preload .toggle-slider:before {
+            transition: none !important;
+        }
+
         .toggle-switch input:checked+.toggle-slider {
             background-color: #00d9ff;
         }
@@ -257,7 +263,7 @@
     </style>
 </head>
 
-<body>
+<body class="preload">
     <h2 data-i18n="popup_title">🎯 勉強の脱線防止</h2>
 
     <!-- スコア表示 -->
@@ -278,7 +284,7 @@
     ">
         <span data-i18n="check_toggle" style="font-size: 13px;">🔍 判定機能</span>
         <label class="toggle-switch">
-            <input type="checkbox" id="check-toggle" checked>
+            <input type="checkbox" id="check-toggle">
             <span class="toggle-slider"></span>
         </label>
     </div>
@@ -295,7 +301,7 @@
     ">
         <span data-i18n="block_toggle" style="font-size: 13px;">🛡️ ブロック機能</span>
         <label class="toggle-switch">
-            <input type="checkbox" id="block-toggle" checked>
+            <input type="checkbox" id="block-toggle">
             <span class="toggle-slider"></span>
         </label>
     </div>

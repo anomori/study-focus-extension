@@ -56,6 +56,11 @@ async function loadSettings() {
     const blockEnabled = data.blockFeatureEnabled !== false; // default true
     document.getElementById('check-toggle').checked = checkEnabled;
     document.getElementById('block-toggle').checked = blockEnabled;
+
+    // Enable animations after initial load
+    setTimeout(() => {
+        document.body.classList.remove('preload');
+    }, 50);
 }
 
 async function toggleCheckFeature() {
