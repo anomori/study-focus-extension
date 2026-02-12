@@ -43,8 +43,11 @@ async function checkSiteSettings() {
 // 2. Check for immediate blocks
 async function checkImmediateBlocks() {
     try {
-        const settings = await chrome.storage.local.get('extensionEnabled');
-        if (settings.extensionEnabled === false) return;
+        const settings = await chrome.storage.local.get(['checkFeatureEnabled', 'blockFeatureEnabled']);
+        const checkEnabled = settings.checkFeatureEnabled !== false;
+        const blockEnabled = settings.blockFeatureEnabled !== false;
+
+        if (!checkEnabled && !blockEnabled) return;
 
         const siteSettings = await checkSiteSettings();
 
@@ -54,8 +57,8 @@ async function checkImmediateBlocks() {
             return;
         }
 
-        // If blocked, show block screen
-        if (siteSettings.blocked) {
+        // If blocked and block feature is enabled, show block screen
+        if (siteSettings.blocked && blockEnabled) {
             // Check i18n readiness
             if (!i18nReady && typeof I18n !== 'undefined') await I18n.init();
 
@@ -85,8 +88,11 @@ new MutationObserver(() => {
 
 async function onUrlChange() {
     try {
-        const settings = await chrome.storage.local.get('extensionEnabled');
-        if (settings.extensionEnabled === false) return;
+        const settings = await chrome.storage.local.get(['checkFeatureEnabled', 'blockFeatureEnabled']);
+        const checkEnabled = settings.checkFeatureEnabled !== false;
+        const blockEnabled = settings.blockFeatureEnabled !== false;
+
+        if (!checkEnabled && !blockEnabled) return;
 
         // Clear any pending recheck
         if (recheckTimeoutId) {
@@ -103,8 +109,8 @@ async function onUrlChange() {
             return;
         }
 
-        // If blocked, show block screen
-        if (siteSettings.blocked) {
+        // If blocked and block feature is enabled, show block screen
+        if (siteSettings.blocked && blockEnabled) {
             if (!i18nReady && typeof I18n !== 'undefined') await I18n.init();
 
             const title = typeof I18n !== 'undefined' ? I18n.getMessage('block_title') : "ブロック中";
@@ -114,7 +120,9 @@ async function onUrlChange() {
             blockContent(title, message);
         } else {
             removeDistractionOverlay();
-            checkRelevance();
+            if (checkEnabled) {
+                checkRelevance();
+            }
         }
     } catch (e) {
         if (e.message && e.message.includes('Extension context invalidated')) {
@@ -145,10 +153,10 @@ function blockContent(title, message) {
 // 3. Similarity Check
 async function checkRelevance() {
     try {
-        // Check if extension is enabled
-        const settings = await chrome.storage.local.get('extensionEnabled');
-        if (settings.extensionEnabled === false) {
-            console.log("Extension disabled. Skipping check.");
+        // Check if check feature is enabled
+        const settings = await chrome.storage.local.get('checkFeatureEnabled');
+        if (settings.checkFeatureEnabled === false) {
+            console.log("Check feature disabled. Skipping check.");
             return;
         }
 
@@ -427,22 +435,31 @@ function stopPeriodicCheck() {
     }
 }
 
-// Listen for extension toggle messages
+// Listen for feature toggle messages
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.type === 'EXTENSION_TOGGLED') {
+    if (message.type === 'CHECK_FEATURE_TOGGLED') {
         if (message.enabled) {
-            console.log("Extension enabled. Running check...");
-            checkImmediateBlocks();
+            console.log("Check feature enabled. Running check...");
             checkRelevance();
             startPeriodicCheck();
         } else {
-            console.log("Extension disabled. Removing overlays...");
+            console.log("Check feature disabled. Removing overlays...");
             removeDistractionOverlay();
             stopPeriodicCheck();
             if (recheckTimeoutId) {
                 clearTimeout(recheckTimeoutId);
                 recheckTimeoutId = null;
             }
+        }
+    }
+
+    if (message.type === 'BLOCK_FEATURE_TOGGLED') {
+        if (message.enabled) {
+            console.log("Block feature enabled. Running check...");
+            checkImmediateBlocks();
+        } else {
+            console.log("Block feature disabled.");
+            // Don't remove overlays as check feature might still be on
         }
     }
 });
@@ -460,7 +477,7 @@ setTimeout(async () => {
             console.log('Extension context invalidated. Skipping initial setup.');
             return;
         }
-        chrome.storage.local.get('extensionEnabled', (data) => {
+        chrome.storage.local.get('checkFeatureEnabled', (data) => {
             // Check for context invalidation in callback
             if (chrome.runtime.lastError) {
                 console.log('Extension context invalidated during storage access.');
@@ -470,7 +487,7 @@ setTimeout(async () => {
                 console.log('Extension context invalidated in callback.');
                 return;
             }
-            if (data && data.extensionEnabled !== false) {
+            if (data && data.checkFeatureEnabled !== false) {
                 startPeriodicCheck();
             }
         });

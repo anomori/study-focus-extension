@@ -104,14 +104,16 @@ async function startSession(tabId, url) {
       return;
     }
 
-    // Get blocking state
-    const settings = await chrome.storage.local.get('extensionEnabled');
-    const isBlockingEnabled = settings.extensionEnabled !== false;
+    // Get both feature states
+    const settings = await chrome.storage.local.get(['checkFeatureEnabled', 'blockFeatureEnabled']);
+    const isCheckEnabled = settings.checkFeatureEnabled !== false;
+    const isBlockEnabled = settings.blockFeatureEnabled !== false;
 
     activeSessions.set(tabId, {
       domain,
       startTime: Date.now(),
-      isBlockingEnabled,
+      isCheckEnabled,
+      isBlockEnabled,
       lastSaveTime: Date.now()
     });
   } catch (e) {
@@ -162,7 +164,8 @@ async function recordBrowsingSession(session) {
       startTime: session.startTime,
       endTime,
       duration,
-      isBlockingEnabled: session.isBlockingEnabled,
+      isCheckEnabled: session.isCheckEnabled,
+      isBlockEnabled: session.isBlockEnabled,
       date,
       hour
     });

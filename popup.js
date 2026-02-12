@@ -12,7 +12,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('new-topic').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') addTopic();
     });
-    document.getElementById('master-toggle').addEventListener('change', toggleExtension);
+    document.getElementById('check-toggle').addEventListener('change', toggleCheckFeature);
+    document.getElementById('block-toggle').addEventListener('change', toggleBlockFeature);
 
     // 詳細設定ボタン
     document.getElementById('open-settings').addEventListener('click', () => {
@@ -50,21 +51,40 @@ function checkSystemStatus() {
 
 // ========== 拡張機能ON/OFF ==========
 async function loadSettings() {
-    const data = await chrome.storage.local.get('extensionEnabled');
-    const enabled = data.extensionEnabled !== false; // default true
-    document.getElementById('master-toggle').checked = enabled;
+    const data = await chrome.storage.local.get(['checkFeatureEnabled', 'blockFeatureEnabled']);
+    const checkEnabled = data.checkFeatureEnabled !== false; // default true
+    const blockEnabled = data.blockFeatureEnabled !== false; // default true
+    document.getElementById('check-toggle').checked = checkEnabled;
+    document.getElementById('block-toggle').checked = blockEnabled;
 }
 
-async function toggleExtension() {
-    const enabled = document.getElementById('master-toggle').checked;
-    await chrome.storage.local.set({ extensionEnabled: enabled });
+async function toggleCheckFeature() {
+    const enabled = document.getElementById('check-toggle').checked;
+    await chrome.storage.local.set({ checkFeatureEnabled: enabled });
 
     // 全タブに通知
     chrome.tabs.query({}, (tabs) => {
         tabs.forEach(tab => {
             if (tab.id) {
                 chrome.tabs.sendMessage(tab.id, {
-                    type: 'EXTENSION_TOGGLED',
+                    type: 'CHECK_FEATURE_TOGGLED',
+                    enabled: enabled
+                }).catch(() => { });
+            }
+        });
+    });
+}
+
+async function toggleBlockFeature() {
+    const enabled = document.getElementById('block-toggle').checked;
+    await chrome.storage.local.set({ blockFeatureEnabled: enabled });
+
+    // 全タブに通知
+    chrome.tabs.query({}, (tabs) => {
+        tabs.forEach(tab => {
+            if (tab.id) {
+                chrome.tabs.sendMessage(tab.id, {
+                    type: 'BLOCK_FEATURE_TOGGLED',
                     enabled: enabled
                 }).catch(() => { });
             }
