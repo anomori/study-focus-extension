@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>事業計画書 — Study Focus Guard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Mobile Menu Toggle -->
+<button class="menu-toggle" id="menuToggle" aria-label="メニューを開く">☰</button>
+
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="page-wrapper">
+
+  <!-- ========== Sidebar Navigation ========== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <span class="logo-icon">🛡️</span>
+        Study Focus Guard
+      </div>
+    </div>
+    <div class="sidebar-label">目次</div>
+    <ul class="sidebar-nav" id="sidebarNav">
+      <li><a href="#executive-summary"><span class="nav-number">01</span>エグゼクティブサマリー</a></li>
+      <li><a href="#problem"><span class="nav-number">02</span>解決する課題</a></li>
+      <li><a href="#solution"><span class="nav-number">03</span>ソリューション</a></li>
+      <li><a href="#market"><span class="nav-number">04</span>なぜ今か — 市場環境</a></li>
+      <li><a href="#competitive"><span class="nav-number">05</span>競合優位性</a></li>
+      <li><a href="#business-model"><span class="nav-number">06</span>ビジネスモデル</a></li>
+      <li><a href="#giga-school"><span class="nav-number">07</span>GIGAスクール連携</a></li>
+      <li><a href="#technology"><span class="nav-number">08</span>技術的優位性</a></li>
+      <li><a href="#roadmap"><span class="nav-number">09</span>成長戦略</a></li>
+      <li><a href="#risk"><span class="nav-number">10</span>リスクと対策</a></li>
+      <li><a href="#support"><span class="nav-number">11</span>支援制度</a></li>
+      <li><a href="#ethics"><span class="nav-number">12</span>倫理性・プライバシー</a></li>
+    </ul>
+
+    <div class="sidebar-label" style="margin-top: var(--space-xl);">関連文書</div>
+    <ul class="sidebar-nav">
+      <li><a href="dfve.html"><span class="nav-number">📊</span>D/F/V/E 採点表</a></li>
+      <li><a href="lean-canvas.html"><span class="nav-number">📄</span>簡易事業書1枚</a></li>
+    </ul>
+  </aside>
+
+  <!-- ========== Main Content ========== -->
+  <main class="main-content">
+
+    <!-- Hero Section -->
+    <section class="hero" id="top">
+      <div class="hero-inner">
+        <div class="hero-badge">
+          <span class="badge-dot"></span>
+          v1.0.2 Chrome Web Store 公開中
+        </div>
+        <h1>Study Focus Guard<br>事業計画書</h1>
+        <p class="subtitle">
+          ローカルAIで勉強中の脱線をリアルタイム検知するChrome拡張機能。<br>
+          データ外部送信ゼロ。ブロックだけに頼らない。AIが理解する。
+        </p>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="stat-value">59%</div>
+            <div class="stat-label">生徒がPCで勉強中に脱線した割合（<abbr title="経済協力開発機構 (Organisation for Economic Co-operation and Development)">OECD</abbr>調査）</div>
+          </div>
+          <div class="hero-stat">
+            <div class="stat-value">0</div>
+            <div class="stat-label">閲覧データの外部送信</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="content-container">
+
+      <!-- ===================== 1. Executive Summary ===================== -->
+      <section class="section" id="executive-summary">
+        <div class="section-header">
+          <h2><span class="section-number">1</span>エグゼクティブサマリー</h2>
+        </div>
+
+        <p>
+          Study Focus Guardは、学生がPC勉強中にSNSや動画サイトへ脱線してしまう問題を、
+          <strong>ローカルAI（Transformers.js v3 + Multilingual MiniLM-L12-v2）</strong>によるリアルタイム意味解析で解決するChrome拡張機能です。
+        </p>
+        <p>
+          従来のブロッカー型ツールは「URL単位の一律遮断」であり、調べ学習中に必要なページまで遮断してしまう課題がありました。
+          Study Focus Guardは<strong>ページのタイトルや見出しと勉強テーマの意味的類似度</strong>をAIで判定し、脱線しているときだけ穏やかな警告を表示します。
+        </p>
+
+        <h3>3つの核心的強み</h3>
+        <div class="card-grid card-grid-3" style="margin-top: var(--space-md);">
+          <div class="strength-card animate-in animate-delay-1">
+            <div class="strength-number">01</div>
+            <div class="strength-title">AI意味理解</div>
+            <div class="strength-desc">URL/ドメインではなく、コンテンツの「意味」を判定する唯一の集中支援ツール</div>
+          </div>
+          <div class="strength-card animate-in animate-delay-2">
+            <div class="strength-number">02</div>
+            <div class="strength-title">完全ローカル処理</div>
+            <div class="strength-desc">閲覧データの外部送信ゼロで、<abbr title="米国 家庭教育権・プライバシー法">FERPA</abbr>/<abbr title="米国 児童オンラインプライバシー保護法">COPPA</abbr>/<abbr title="EU 一般データ保護規則">GDPR</abbr>への準拠が容易</div>
+            <div class="strength-number">03</div>
+            <div class="strength-title">当事者開発</div>
+            <div class="strength-desc">高専生自身がユーザーであり開発者。ターゲットの「痛み」を深く理解</div>
+          </div>
+        </div>
+
+        <div class="callout callout-blue" style="margin-top: var(--space-xl);">
+          <div class="callout-icon">📌</div>
+          <div class="callout-content">
+            <p><strong>現在の状況</strong>: v1.0.2がChrome Web Storeで公開中。広告付きFreeプラン + 広告なしPremiumプランの収益化を準備中。</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== 2. Problem ===================== -->
+      <section class="section" id="problem">
+        <div class="section-header">
+          <h2><span class="section-number">2</span>解決する課題</h2>
+        </div>
+
+        <h3>課題の深刻さ</h3>
+        <p>学生のデジタル脱線は、もはや個人の意志力の問題ではなく、<strong>構造的な課題</strong>です。</p>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>データソース</th>
+                <th>統計</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><abbr title="経済協力開発機構">OECD</abbr> <abbr title="学習到達度の国際的な評価プログラム (Programme for International Student Assessment)">PISA</abbr> 2022</td>
+                <td>OECD加盟国の生徒の <strong>59%</strong> が、他の生徒のデバイス使用で気が散ると回答</td>
+              </tr>
+              <tr>
+                <td>Studyplus調査（2024年12月）</td>
+                <td>高3生の <strong>約半数（44.6%）</strong> がSNSを利用しながら勉強</td>
+              </tr>
+              <tr>
+                <td>McCoy (2020)</td>
+                <td>学生は授業時間の <strong>19.4%</strong> を非授業目的のデジタル活動に使用、1日平均 <strong>9.06回</strong></td>
+              </tr>
+              <tr>
+                <td>文科省学力調査（2024年7月）</td>
+                <td>SNS使用時間が長いほど <strong>正答率が低下</strong> する傾向</td>
+              </tr>
+              <tr>
+                <td>国立青少年教育振興機構（令和6年7月）</td>
+                <td>高校生のSNS利用: 1-2h 26.7%、2-3h 25.3%、3-4h 17.3%</td>
+              </tr>
+              <tr>
+                <td>Rutgers大学研究</td>
+                <td>携帯電話による気散じは <strong>使用者本人だけでなく周囲の生徒</strong> の成績にも悪影響</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>既存ソリューションの限界</h3>
+        <p>
+          現在の集中支援ツールはすべて <strong>ルールベース</strong>（URL/ドメイン/時間制限）であり、以下の課題を抱えています：
+        </p>
+
+        <div class="card-grid card-grid-3" style="margin-top: var(--space-md);">
+          <div class="card">
+            <div class="card-icon card-icon-amber">🚫</div>
+            <div class="card-title">過剰ブロック</div>
+            <div class="card-desc">調べ学習中にWikipediaやYouTubeの教育動画まで遮断される</div>
+          </div>
+          <div class="card">
+            <div class="card-icon card-icon-amber">🔓</div>
+            <div class="card-title">回避が容易</div>
+            <div class="card-desc">新しいサイトやURLを変えればブロックを迂回できる</div>
+          </div>
+          <div class="card">
+            <div class="card-icon card-icon-amber">🤖</div>
+            <div class="card-title">コンテキスト非理解</div>
+            <div class="card-desc">「数学の勉強中に数学の動画」と「ゲーム実況」を区別できない</div>
+          </div>
+        </div>
+
+        <div class="callout callout-highlight" style="margin-top: var(--space-xl);">
+          <div class="callout-icon">💡</div>
+          <div class="callout-content">
+            <p><strong>Study Focus Guardが解決すること</strong>: 「何を見ているか」ではなく「今の勉強と関連があるか」を判定する。だから必要なページは遮断せず、脱線だけを検知できる。</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== 3. Solution ===================== -->
+      <section class="section" id="solution">
+        <div class="section-header">
+          <h2><span class="section-number">3</span>ソリューション</h2>
+        </div>
+
+        <h3>プロダクト概要</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>項目</th><th>内容</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>プロダクト名</td><td><strong>Study Focus Guard</strong></td></tr>
+              <tr><td>形態</td><td>Chrome拡張機能（Manifest V3）</td></tr>
+              <tr><td>バージョン</td><td>v1.0.2（Chrome Web Store 公開中）</td></tr>
+              <tr><td>技術</td><td>Transformers.js v3 + Multilingual MiniLM-L12-v2, <abbr title="ニューラルネットワークのオープン規格モデル形式 (Open Neural Network Exchange)">ONNX</abbr> Runtime (<abbr title="ブラウザ上で高速実行するための中間形式 (WebAssembly)">Wasm</abbr>)</td></tr>
+              <tr><td>プライバシー</td><td>閲覧データの外部送信ゼロ、ローカルAI推論（モデルは<abbr title="コンテンツ配信ネットワーク (Content Delivery Network)">CDN</abbr>から取得）</td></tr>
+
+            </tbody>
+          </table>
+        </div>
+
+        <h3>使い方の流れ</h3>
+        <div class="flow-steps">
+          <div class="flow-step">
+            <div class="flow-step-number">1</div>
+            <div class="flow-step-title">テーマを入力</div>
+            <div class="flow-step-desc">例：「微分方程式」「英語リーディング」</div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-step-number">2</div>
+            <div class="flow-step-title">通常通り閲覧</div>
+            <div class="flow-step-desc">AIがバックグラウンドで意味解析</div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-step-number">3</div>
+            <div class="flow-step-title">脱線を検知</div>
+            <div class="flow-step-desc">類似度 &lt; 0.35 で警告オーバーレイ</div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-step-number">4</div>
+            <div class="flow-step-title">統計で振り返り</div>
+            <div class="flow-step-desc">集中時間・脱線回数をダッシュボード確認</div>
+          </div>
+        </div>
+
+        <h3>主要機能</h3>
+        <ul class="feature-list">
+          <li>
+            <span class="feature-icon">🧠</span>
+            <span><strong>AI意味的類似度判定</strong>: 勉強テーマとページのタイトル・見出し・説明文の意味的関連性をリアルタイムで計算</span>
+          </li>
+          <li>
+            <span class="feature-icon">⚠️</span>
+            <span><strong>警告オーバーレイ</strong>: ブロックではなく「気づき」を与える穏やかなUI</span>
+          </li>
+          <li>
+            <span class="feature-icon">🛑</span>
+            <span><strong>YouTube Shorts / Instagram 自動ブロック</strong>: 高リスクサイトはルールベースで即時対応</span>
+          </li>
+          <li>
+            <span class="feature-icon">📊</span>
+            <span><strong>学習統計ダッシュボード</strong>: 集中時間・脱線パターンを可視化</span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- ===================== 4. Market ===================== -->
+      <section class="section" id="market">
+        <div class="section-header">
+          <h2><span class="section-number">4</span>なぜ今か — 市場環境</h2>
+        </div>
+
+        <h3><abbr title="教育 × テクノロジー (Education Technology)">EdTech</abbr>市場の成長</h3>
+        <p>日本のEdTech市場は <strong><abbr title="年平均成長率 (Compound Annual Growth Rate)">CAGR</abbr> 12〜19%</strong> で急成長中です。</p>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>調査会社</th><th>2024年 市場規模</th><th>将来予測</th><th>CAGR</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>GlobalData</td><td>$3,479M</td><td>—</td><td>12.4%</td></tr>
+              <tr><td>Grand View Research</td><td>$8,856M</td><td>$22,099M（2030）</td><td>16.2%</td></tr>
+              <tr><td>IMARC Group</td><td>$17,766M（2025）</td><td>$85,410M（2034）</td><td>19.06%</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>3つの追い風</h3>
+        <div class="card-grid card-grid-3" style="margin-top: var(--space-md);">
+          <div class="card">
+            <div class="card-icon card-icon-blue">🏫</div>
+            <div class="card-title"><abbr title="Global Innovation Gateway for All — 文科省が推進する全校端末配布構想">GIGA</abbr>スクール第2期</div>
+            <div class="card-desc">51.7%の自治体が端末更新中。Chromebookが主流。Webフィルタリングが必須要件化。</div>
+          </div>
+          <div class="card">
+            <div class="card-icon card-icon-purple">🧠</div>
+            <div class="card-title">Edge AI市場の爆発</div>
+            <div class="card-desc">$24.9B〜$35.8B（2025）、CAGR 17.6〜33.3%。ローカルAI推論が技術的に実用段階へ。</div>
+          </div>
+          <div class="card">
+            <div class="card-icon card-icon-green">📵</div>
+            <div class="card-title">デジタルデトックス機運</div>
+            <div class="card-desc">2026年に受験生向け「デジトックス」ブランド登場。社会的な課題認識が拡大中。</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== 5. Competitive ===================== -->
+      <section class="section" id="competitive">
+        <div class="section-header">
+          <h2><span class="section-number">5</span>競合優位性 — なぜ勝てるか</h2>
+        </div>
+
+        <h3>競合比較</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>製品</th><th>アプローチ</th><th>AI搭載</th><th>プライバシー</th><th>学生特化</th><th>価格</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Freedom</td>
+                <td>URLブロック</td>
+                <td><span class="cross">❌</span></td>
+                <td><span class="warn">⚠️</span> クラウド</td>
+                <td><span class="cross">❌</span></td>
+                <td>$8.99/月〜</td>
+              </tr>
+              <tr>
+                <td>Forest</td>
+                <td>ゲーミフィケーション</td>
+                <td><span class="cross">❌</span></td>
+                <td><span class="warn">⚠️</span> クラウド</td>
+                <td>△</td>
+                <td>¥490買い切り</td>
+              </tr>
+              <tr>
+                <td>Cold Turkey</td>
+                <td>ハードブロック</td>
+                <td><span class="cross">❌</span></td>
+                <td><span class="check">✅</span></td>
+                <td><span class="cross">❌</span></td>
+                <td>$39一括</td>
+              </tr>
+              <tr>
+                <td>StayFocusd</td>
+                <td>時間制限</td>
+                <td><span class="cross">❌</span></td>
+                <td><span class="check">✅</span></td>
+                <td><span class="cross">❌</span></td>
+                <td>無料</td>
+              </tr>
+              <tr class="row-highlight">
+                <td><strong>Study Focus Guard</strong></td>
+                <td><strong>AI意味理解</strong></td>
+                <td><span class="check"><strong>✅</strong></span></td>
+                <td><span class="check"><strong>✅ 完全ローカル</strong></span></td>
+                <td><span class="check"><strong>✅</strong></span></td>
+                <td><strong><abbr title="基本無料 + 有料プレミアムの収益モデル (Free + Premium)">Freemium</abbr></strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>4つの圧倒的な優位性</h3>
+        <div class="card-grid card-grid-2" style="margin-top: var(--space-md);">
+          <div class="strength-card">
+            <div class="strength-number">01</div>
+            <div class="strength-title">AI意味理解</div>
+            <div class="strength-desc">競合はURL/ドメインベースのブロック。Study Focus Guardだけがコンテンツの「意味」を理解する</div>
+          </div>
+          <div class="strength-card">
+            <div class="strength-number">02</div>
+            <div class="strength-title">完全ローカル処理</div>
+            <div class="strength-desc">閲覧データの外部送信ゼロ → FERPA/COPPA/GDPRへの準拠が容易</div>
+          </div>
+          <div class="strength-card">
+            <div class="strength-number">03</div>
+            <div class="strength-title">当事者開発</div>
+            <div class="strength-desc">高専生自身がユーザーかつ開発者。ターゲットの痛みを身をもって理解している</div>
+          </div>
+          <div class="strength-card">
+            <div class="strength-number">04</div>
+            <div class="strength-title">技術的参入障壁</div>
+            <div class="strength-desc">Transformers.js × Chrome拡張内でのAI推論は実装難易度が高く、簡単に模倣できない</div>
+          </div>
+        </div>
+
+        <h3>Grammarlyに学ぶ成長モデル</h3>
+        <p>Chrome拡張で最も成功した事例である <strong>Grammarly</strong> は、Freemiumモデルで4,000万人以上のユーザーを獲得し、企業評価額 <strong>$13B</strong> に到達しました。</p>
+        <div class="card-grid card-grid-3" style="margin-top: var(--space-md);">
+          <div class="card" style="text-align: center;">
+            <div class="card-title" style="font-size: 1.5rem; color: var(--primary-700); font-family: var(--font-mono);">~10%</div>
+            <div class="card-desc">Freemium転換率<br>（業界平均2-5%の2〜5倍）</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div class="card-title" style="font-size: 1.5rem; color: var(--primary-700); font-family: var(--font-mono);">50,000+</div>
+            <div class="card-desc">法人顧客数</div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div class="card-title" style="font-size: 1.5rem; color: var(--primary-700); font-family: var(--font-mono);">$13B</div>
+            <div class="card-desc">企業評価額</div>
+          </div>
+        </div>
+        <p style="margin-top: var(--space-md); color: var(--gray-500); font-size: 0.85rem;">Study Focus Guardも同様のパスを辷ることを目指します：Chrome Web Store → 口コミ → <abbr title="企業対企業の取引 (Business to Business)">B2B</abbr>展開</p>
+      </section>
+
+      <!-- ===================== 6. Business Model ===================== -->
+      <section class="section" id="business-model">
+        <div class="section-header">
+          <h2><span class="section-number">6</span>ビジネスモデル</h2>
+        </div>
+
+        <h3>収益構造</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>ティア</th><th>価格</th><th>主な機能</th><th>ターゲット</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="tag">Free</span></td>
+                <td><strong>¥0</strong></td>
+                <td>基本AI脱線検知、YouTube Shorts/Instagramブロック（ブロック画面に広告表示）、1日の統計</td>
+                <td>全ユーザー（獲得チャネル + 広告収益）</td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-blue">Premium</span></td>
+                <td><strong>¥300-500/月</strong><br>¥2,400-4,000/年</td>
+                <td>広告なしブロック、高度な統計・分析、カスタム閾値、複数テーマ同時設定、学習レポート</td>
+                <td>個人（学生・社会人）</td>
+              </tr>
+              <tr>
+                <td><span class="tag tag-green"><abbr title="企業対企業向け販売">B2B</abbr></span></td>
+                <td><strong>¥500-1,000/年/生徒</strong></td>
+                <td>管理者ダッシュボード、クラス統計、一括設定、<abbr title="外部システムとの連携用インターフェース (Application Programming Interface)">API</abbr></td>
+                <td>教育委員会・学校法人</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>収益シミュレーション（3年間）</h3>
+        <div class="revenue-row">
+          <div class="revenue-card">
+            <div class="revenue-year">Year 1（2026）</div>
+            <div class="revenue-amount">¥54K</div>
+            <div class="revenue-growth">MAU 500 / Premium 15人</div>
+          </div>
+          <div class="revenue-card">
+            <div class="revenue-year">Year 2（2027）</div>
+            <div class="revenue-amount">¥750K</div>
+            <div class="revenue-growth">+ B2B 3校（300人）</div>
+          </div>
+          <div class="revenue-card">
+            <div class="revenue-year">Year 3（2028）</div>
+            <div class="revenue-amount">¥4.83M</div>
+            <div class="revenue-growth">MAU 15,000 / B2B 10校</div>
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>指標</th><th>Year 1（2026）</th><th>Year 2（2027）</th><th>Year 3（2028）</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><abbr title="月間アクティブユーザー数 (Monthly Active Users)">MAU</abbr>（月間アクティブ）</td><td>500</td><td>3,000</td><td>15,000</td></tr>
+              <tr><td>Premium転換率</td><td>3%</td><td>5%</td><td>7%</td></tr>
+              <tr><td>Premium会員数</td><td>15</td><td>150</td><td>1,050</td></tr>
+              <tr><td>Premium年間収益</td><td>¥54,000</td><td>¥540,000</td><td>¥3,780,000</td></tr>
+              <tr><td>B2B導入校</td><td>0</td><td>3校（計300人）</td><td>10校（計1,500人）</td></tr>
+              <tr><td>B2B年間収益</td><td>¥0</td><td>¥210,000</td><td>¥1,050,000</td></tr>
+              <tr class="row-total"><td>年間総収益</td><td>¥54,000</td><td>¥750,000</td><td>¥4,830,000</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout callout-amber">
+          <div class="callout-icon">⚠️</div>
+          <div class="callout-content">
+            <p><strong>注意</strong>: この収益シミュレーションは保守的な仮定に基づく推計値です。実際の数値はユーザー獲得速度・転換率・B2B営業の進捗により変動します。</p>
+          </div>
+        </div>
+
+        <h3>コスト構造</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>項目</th><th>Year 1</th><th>Year 2</th><th>Year 3</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>開発（1人 → チーム化）</td><td>¥0（自身の労務）</td><td>¥0〜500,000</td><td>¥1,000,000</td></tr>
+              <tr><td>インフラ</td><td>¥600（$5 CWS登録のみ）</td><td>¥50,000</td><td>¥100,000</td></tr>
+              <tr><td>マーケティング</td><td>¥0（口コミ・コミュニティ）</td><td>¥100,000</td><td>¥500,000</td></tr>
+              <tr class="row-total"><td>年間総コスト</td><td>¥600</td><td>¥150,000〜650,000</td><td>¥1,600,000</td></tr>
+              <tr class="row-highlight"><td>損益</td><td>+¥53,400</td><td>+¥100,000〜600,000</td><td>+¥3,230,000</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout callout-green">
+          <div class="callout-icon">✅</div>
+          <div class="callout-content">
+            <p><strong>ポイント</strong>: ローカルAI推論のためサーバーコストがほぼゼロ。広告収益（Freeプラン）+ Premium課金の2本柱で初年度から収益化が可能。インフラの固定費がないため、ユーザー増加時の限界コストも極小。</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== 7. GIGA School ===================== -->
+      <section class="section" id="giga-school">
+        <div class="section-header">
+          <h2><span class="section-number">7</span>GIGAスクール構想との連携</h2>
+        </div>
+
+        <p>GIGAスクール構想第2期は、Study Focus Guardにとって <strong>最大のB2B市場機会</strong> です。</p>
+
+        <h3>なぜフィットするか</h3>
+        <div class="card-grid card-grid-2" style="margin-top: var(--space-md);">
+          <div class="card">
+            <div class="card-icon card-icon-blue">💻</div>
+            <div class="card-title">Chromebook環境に直接対応</div>
+            <div class="card-desc">Chrome拡張だから追加ハードウェア不要</div>
+          </div>
+          <div class="card">
+            <div class="card-icon card-icon-green">🔄</div>
+            <div class="card-title">既存フィルタリングとの補完関係</div>
+            <div class="card-desc">URLブロック型（i-FILTER等）は「危険なサイトを遮断」、Study Focus Guardは「脱線を検知して気づきを与える」。異なるレイヤーで価値提供</div>
+          </div>
+          <div class="card">
+            <div class="card-icon card-icon-purple">📋</div>
+            <div class="card-title">文科省の新基準に適合</div>
+            <div class="card-desc">「端末の利活用状況の可視化」にStudy Focus Guardの統計機能がフィット</div>
+          </div>
+          <div class="card">
+            <div class="card-icon card-icon-amber">🔄</div>
+            <div class="card-title">51.7%の自治体が端末更新中</div>
+            <div class="card-desc">新端末導入時にソフトウェアも見直されるタイミング</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== 8. Technology ===================== -->
+      <section class="section" id="technology">
+        <div class="section-header">
+          <h2><span class="section-number">8</span>技術的優位性</h2>
+        </div>
+
+        <h3>技術スタック</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>コンポーネント</th><th>技術</th><th>役割</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>AIモデル</td><td><strong>Multilingual MiniLM-L12-v2</strong>（ONNX形式）</td><td>多言語対応テキストの意味的ベクトル化、類似度計算</td></tr>
+              <tr><td>推論エンジン</td><td><strong>Transformers.js v3 + ONNX Runtime</strong> (Wasm)</td><td>ブラウザ内でのローカルAI推論（モデルはCDNから取得）</td></tr>
+              <tr><td>実行環境</td><td><strong>sandbox.html</strong>（Manifest V3準拠）</td><td>Chrome拡張のセキュリティモデル内でAI実行</td></tr>
+              <tr><td>データ保存</td><td><strong>Chrome Storage API</strong></td><td>統計・設定のローカル保存</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>技術ロードマップ</h3>
+        <ul class="feature-list">
+          <li>
+            <span class="feature-icon">⚡</span>
+            <span><strong>Transformers.js v4</strong>（2026年2月Preview公開）: WebGPU対応で <strong>BERT系モデル4倍高速化</strong></span>
+          </li>
+          <li>
+            <span class="feature-icon">🧪</span>
+            <span><strong>Chrome内蔵AI</strong>（Gemini Nano / Prompt API）: 将来的に連携し、より高度な意味理解を追加</span>
+          </li>
+          <li>
+            <span class="feature-icon">🌐</span>
+            <span><strong>マルチブラウザ対応</strong>: Firefox / Edge への展開で市場拡大</span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- ===================== 9. Roadmap ===================== -->
+      <section class="section" id="roadmap">
+        <div class="section-header">
+          <h2><span class="section-number">9</span>成長戦略・ロードマップ</h2>
+        </div>
+
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-phase">Phase 0 — 収益化基盤構築</div>
+            <div class="timeline-title">広告収益 + Premiumプラン / 初期ユーザー獲得</div>
+            <div class="timeline-period">2026 Q1 - Q2</div>
+            <div class="timeline-content">
+              Chrome Web Store公開済み、広告付きFreeプラン実装、WebGPU移行、高専内ベータテスト
+            </div>
+            <span class="timeline-kpi"><abbr title="日間アクティブユーザー数 (Daily Active Users)">DAU</abbr> 100</span>
+            <span class="timeline-kpi"><abbr title="推奨度スコア — ユーザー満足度の指標 (Net Promoter Score)">NPS</abbr> 40+</span>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-phase">Phase 1 — Growth</div>
+            <div class="timeline-title">ユーザー基盤拡大</div>
+            <div class="timeline-period">2026 Q3 - Q4</div>
+            <div class="timeline-content">
+              Premium機能リリース、大学生へ拡大、<abbr title="Chrome Web Store">CWS</abbr> <abbr title="検索エンジン最適化 (Search Engine Optimization)">SEO</abbr>最適化
+            </div>
+            <span class="timeline-kpi">MAU 1,000</span>
+            <span class="timeline-kpi">転換率 3%+</span>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-phase">Phase 2 — B2B Pilot</div>
+            <div class="timeline-title">教育機関向け展開</div>
+            <div class="timeline-period">2027 Q1 - Q2</div>
+            <div class="timeline-content">
+              管理者ダッシュボード、パイロット校1-3校、GIGAスクール対応
+            </div>
+            <span class="timeline-kpi">パイロット校 3校</span>
+            <span class="timeline-kpi">B2B <abbr title="年間経常収益 (Annual Recurring Revenue)">ARR</abbr>設定</span>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-phase">Phase 3 — Scale</div>
+            <div class="timeline-title">収益化・スケール</div>
+            <div class="timeline-period">2027 Q3〜</div>
+            <div class="timeline-content">
+              B2B本格営業、マルチブラウザ、国際展開検討
+            </div>
+            <span class="timeline-kpi">MAU 10,000+</span>
+            <span class="timeline-kpi">ARR ¥5M+</span>
+          </div>
+        </div>
+
+        <h3>短期マイルストーン（今後3ヶ月）</h3>
+        <ul class="checklist">
+          <li>広告付きFreeプランの実装（ブロック画面への広告表示）</li>
+          <li>Premiumプラン（広告なし）の課金基盤構築</li>
+          <li>Transformers.js v4（WebGPU）への移行テスト</li>
+          <li>高専内ベータテスター募集（目標: 30-50名）</li>
+          <li>ベータフィードバック収集の仕組み構築</li>
+          <li>プライバシーポリシーの作成・公開</li>
+          <li>KOSENJIN SUMMIT 2026（3/1）への参加検討</li>
+        </ul>
+      </section>
+
+      <!-- ===================== 10. Risk ===================== -->
+      <section class="section" id="risk">
+        <div class="section-header">
+          <h2><span class="section-number">10</span>リスクと対策</h2>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>リスク</th><th>影響</th><th>確率</th><th>対策</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Manifest V3 制約強化</strong></td>
+                <td><span class="badge badge-high">高</span></td>
+                <td><span class="badge badge-medium">中</span></td>
+                <td>仕様追従 / Firefox・Edge対応で分散 / Chrome内蔵AI連携</td>
+              </tr>
+              <tr>
+                <td><strong>大手の類似機能内蔵</strong></td>
+                <td><span class="badge badge-high">高</span></td>
+                <td><span class="badge badge-low">低〜中</span></td>
+                <td>「学習特化」の深い体験で差別化 / B2B管理レイヤーで価値提供</td>
+              </tr>
+              <tr>
+                <td><strong>収益化遅延</strong></td>
+                <td><span class="badge badge-medium">中</span></td>
+                <td><span class="badge badge-high">高</span></td>
+                <td>B2B早期開拓 / 超低価格（¥300/月）設定 / 年間プラン割引</td>
+              </tr>
+              <tr>
+                <td><strong>AI精度の限界</strong></td>
+                <td><span class="badge badge-medium">中</span></td>
+                <td><span class="badge badge-medium">中</span></td>
+                <td>閾値の継続調整 / ルールベースとのハイブリッド / ファインチューニング</td>
+              </tr>
+              <tr>
+                <td><strong>1人開発のボトルネック</strong></td>
+                <td><span class="badge badge-medium">中</span></td>
+                <td><span class="badge badge-high">高</span></td>
+                <td><abbr title="オープンソースソフトウェア — ソースコードを公開して誰でも自由に使えるようにすること">OSS</abbr>化 / 高専仲間の巻き込み / 起業支援プログラム活用</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===================== 11. Support ===================== -->
+      <section class="section" id="support">
+        <div class="section-header">
+          <h2><span class="section-number">11</span>活用可能な支援制度</h2>
+        </div>
+
+        <div class="program-card">
+          <div style="flex: 1;">
+            <div style="display: flex; align-items: center; gap: var(--space-sm); margin-bottom: 4px;">
+              <strong style="font-size: 0.95rem;"><abbr title="ディープラーニングコンテスト — 高専生向けAI×事業創出コンテスト">DCON</abbr></strong>
+              <span class="program-fit fit-high">◎ 親和性 高</span>
+            </div>
+            <p style="font-size: 0.82rem; color: var(--gray-600); margin: 0;">高専生向けAI×事業創出コンテスト — ローカルAI×教育で高い親和性</p>
+          </div>
+        </div>
+        <div class="program-card">
+          <div style="flex: 1;">
+            <div style="display: flex; align-items: center; gap: var(--space-sm); margin-bottom: 4px;">
+              <strong style="font-size: 0.95rem;">未踏事業（<abbr title="独立行政法人 情報処理推進機構">IPA</abbr>）</strong>
+              <span class="program-fit fit-high">◎ 親和性 高</span>
+            </div>
+            <p style="font-size: 0.82rem; color: var(--gray-600); margin: 0;">独創的IT人材の発掘・育成 — 技術的独自性が応募要件に合致</p>
+          </div>
+        </div>
+        <div class="program-card">
+          <div style="flex: 1;">
+            <div style="display: flex; align-items: center; gap: var(--space-sm); margin-bottom: 4px;">
+              <strong style="font-size: 0.95rem;">起業家甲子園 / 起業家万博</strong>
+              <span class="program-fit fit-medium">○ 親和性 中</span>
+            </div>
+            <p style="font-size: 0.82rem; color: var(--gray-600); margin: 0;">総務省・<abbr title="国立研究開発法人 情報通信研究機構">NICT</abbr>主催の全国コンテスト — 学生起業アイデアとして出場可能</p>
+          </div>
+        </div>
+        <div class="program-card">
+          <div style="flex: 1;">
+            <div style="display: flex; align-items: center; gap: var(--space-sm); margin-bottom: 4px;">
+              <strong style="font-size: 0.95rem;">高専発スタートアップ支援</strong>
+              <span class="program-fit fit-medium">○ 親和性 中</span>
+            </div>
+            <p style="font-size: 0.82rem; color: var(--gray-600); margin: 0;">高専機構によるインキュベーション — メンタリング・ネットワーク獲得</p>
+          </div>
+        </div>
+        <div class="program-card">
+          <div style="flex: 1;">
+            <div style="display: flex; align-items: center; gap: var(--space-sm); margin-bottom: 4px;">
+              <strong style="font-size: 0.95rem;">KOSENJIN SUMMIT 2026</strong>
+              <span class="program-fit fit-medium">○ 親和性 中</span>
+            </div>
+            <p style="font-size: 0.82rem; color: var(--gray-600); margin: 0;">2026/3/1 STATION Ai（名古屋） — EdTech起業家との交流・ピッチ練習</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== 12. Ethics ===================== -->
+      <section class="section" id="ethics">
+        <div class="section-header">
+          <h2><span class="section-number">12</span>倫理性・プライバシー</h2>
+        </div>
+
+        <div class="callout callout-highlight">
+          <div class="callout-icon">🔒</div>
+          <div class="callout-content">
+            <p><strong>Study Focus Guardのプライバシー設計は「最強の防御線」です</strong></p>
+          </div>
+        </div>
+
+        <ul class="feature-list" style="margin-top: var(--space-lg);">
+          <li>
+            <span class="feature-icon">🔐</span>
+            <span><strong>閲覧データの外部送信ゼロ</strong>: すべてのAI推論がデバイス上で完結（AIモデル自体はCDNからダウンロード）</span>
+          </li>
+          <li>
+            <span class="feature-icon">📜</span>
+            <span><strong>FERPA/COPPA/GDPRへの準拠が容易</strong>: 閲覧データが端末の外に出ないため、規制対応の負担を大幅に軽減</span>
+          </li>
+          <li>
+            <span class="feature-icon">🤝</span>
+            <span><strong>「監視」ではなく「支援」</strong>: 生徒の行動を記録・報告するのではなく、脱線への「気づき」を与える設計</span>
+          </li>
+          <li>
+            <span class="feature-icon">📋</span>
+            <span><strong>参考事例</strong>: Brisk Teaching（EdTech）は93%のCommon Sense Privacy Ratingを取得し、プライバシーファーストが差別化要因に</span>
+          </li>
+        </ul>
+
+        <h3>今後の取り組み</h3>
+        <ul class="checklist">
+          <li>プライバシーポリシーの明文化（2026 Q1目標）</li>
+          <li>Common Sense Privacy評価の取得申請（2026 Q3目標）</li>
+        </ul>
+      </section>
+
+
+
+      <!-- Footer -->
+      <footer class="doc-footer">
+        <p>Study Focus Guard — 事業計画書 | 2026年2月</p>
+        <p>© 盛髙 雄寛（熊本高専）</p>
+      </footer>
+
+    </div><!-- /.content-container -->
+  </main>
+</div><!-- /.page-wrapper -->
+
+<!-- Back to Top -->
+<button class="back-to-top" id="backToTop" aria-label="ページ上部へ">↑</button>
+
+<script>
+  // Sidebar navigation active state
+  const sections = document.querySelectorAll('.section');
+  const navLinks = document.querySelectorAll('.sidebar-nav a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href') === '#' + entry.target.id) {
+            link.classList.add('active');
+          }
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  sections.forEach(section => observer.observe(section));
+
+  // Back to Top button
+  const backToTop = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    backToTop.classList.toggle('visible', window.scrollY > 400);
+  });
+  backToTop.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // Mobile sidebar toggle
+  const menuToggle = document.getElementById('menuToggle');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+
+  menuToggle.addEventListener('click', () => {
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('show');
+  });
+
+  overlay.addEventListener('click', () => {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('show');
+  });
+
+  // Close sidebar on nav click (mobile)
+  navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      if (window.innerWidth <= 1200) {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('show');
+      }
+    });
+  });
+
+  // Animate elements on scroll
+  const animateElements = document.querySelectorAll('.animate-in');
+  const animateObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.animationPlayState = 'running';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  animateElements.forEach(el => {
+    el.style.animationPlayState = 'paused';
+    animateObserver.observe(el);
+  });
+</script>
+
+</body>
+</html>

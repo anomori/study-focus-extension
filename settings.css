@@ -651,12 +651,7 @@ body {
     }
 }
 
-/* Timezone Settings */
 .setting-group {
-    background: rgba(45, 90, 150, 0.5);
-    border: 1px solid rgba(0, 217, 255, 0.4);
-    border-radius: 12px;
-    padding: 20px;
     margin-bottom: 20px;
 }
 
