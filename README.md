@@ -5,6 +5,8 @@
 
 **🌐 日本語・English 対応**
 
+📄 [事業計画書はこちら](https://anomori.github.io/study-focus-extension/)
+
 ## 🚀 インストール方法
 
 ### Chrome ウェブストアからインストール（推奨）
