@@ -2,7 +2,8 @@
 console.log("Offscreen bridge loaded.");
 
 let iframe = null;
-let pendingRequests = {};
+const pendingRequests = {};
+const REQUEST_TIMEOUT = 60000; // 60秒タイムアウト
 
 document.addEventListener('DOMContentLoaded', () => {
     iframe = document.getElementById('sandbox-frame');
@@ -52,8 +53,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             return;
         }
 
-        const requestId = Math.random().toString(36).substring(7);
+        const requestId = crypto.randomUUID();
         pendingRequests[requestId] = sendResponse;
+
+        // タイムアウト処理（メモリリーク防止）
+        setTimeout(() => {
+            if (pendingRequests[requestId]) {
+                pendingRequests[requestId]({ error: 'Request timeout' });
+                delete pendingRequests[requestId];
+            }
+        }, REQUEST_TIMEOUT);
 
         iframe.contentWindow.postMessage({
             type: 'CHECK_RELEVANCE',
@@ -70,8 +79,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             return;
         }
 
-        const requestId = Math.random().toString(36).substring(7);
+        const requestId = crypto.randomUUID();
         pendingRequests[requestId] = sendResponse;
+
+        // タイムアウト処理（メモリリーク防止）
+        setTimeout(() => {
+            if (pendingRequests[requestId]) {
+                pendingRequests[requestId]({ loaded: false, error: 'Status check timeout' });
+                delete pendingRequests[requestId];
+            }
+        }, REQUEST_TIMEOUT);
 
         iframe.contentWindow.postMessage({
             type: 'CHECK_STATUS',

@@ -409,21 +409,20 @@ async function cancelTimer(feature) {
 }
 
 async function loadTimerStatus() {
-    await updateTimerDisplay('check');
-    await updateTimerDisplay('block');
+    // 1回のストレージアクセスで両方のタイマーデータを取得
+    const data = await chrome.storage.local.get(['timer_check', 'timer_block']);
+
+    await updateTimerDisplay('check', data.timer_check);
+    await updateTimerDisplay('block', data.timer_block);
 
     // check/block両方未設定なら「未設定」表示
-    const checkData = await chrome.storage.local.get('timer_check');
-    const blockData = await chrome.storage.local.get('timer_block');
-    const checkActive = checkData.timer_check && checkData.timer_check.fireAt > Date.now();
-    const blockActive = blockData.timer_block && blockData.timer_block.fireAt > Date.now();
+    const checkActive = data.timer_check && data.timer_check.fireAt > Date.now();
+    const blockActive = data.timer_block && data.timer_block.fireAt > Date.now();
     document.getElementById('no-active-timers').style.display = (!checkActive && !blockActive) ? 'block' : 'none';
 }
 
-async function updateTimerDisplay(feature) {
+async function updateTimerDisplay(feature, timer) {
     const storageKey = `timer_${feature}`;
-    const data = await chrome.storage.local.get(storageKey);
-    const timer = data[storageKey];
 
     const statusEl = document.getElementById(`${feature}-timer-status`);
     const remainingEl = document.getElementById(`${feature}-timer-remaining`);

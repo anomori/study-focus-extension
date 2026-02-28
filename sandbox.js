@@ -65,8 +65,16 @@ function cosineSimilarity(vecA, vecB) {
     return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
 }
 
-// Get embedding for a text
-async function getEmbedding(text) {
+// Embedding cache for topic strings (topics rarely change, page titles change)
+const embeddingCache = new Map();
+
+// Get embedding for a text (with optional caching for repeated queries like topics)
+async function getEmbedding(text, useCache = false) {
+    if (useCache) {
+        const cached = embeddingCache.get(text);
+        if (cached) return cached;
+    }
+
     if (!embeddingModel) {
         await loadModel();
     }
@@ -77,7 +85,13 @@ async function getEmbedding(text) {
 
     // Run embedding pipeline (returns nested array, we take mean pooling result)
     const output = await embeddingModel(text, { pooling: 'mean', normalize: true });
-    return Array.from(output.data);
+    const embedding = Array.from(output.data);
+
+    if (useCache) {
+        embeddingCache.set(text, embedding);
+    }
+
+    return embedding;
 }
 
 // Handle relevance check request
@@ -95,7 +109,7 @@ async function handleRelevanceCheck(data) {
     let maxSimilarity = -1;
 
     for (const topic of studyTopics) {
-        const topicEmbedding = await getEmbedding(topic);
+        const topicEmbedding = await getEmbedding(topic, true); // Cache topic embeddings
         const sim = cosineSimilarity(titleEmbedding, topicEmbedding);
         console.log(`Similarity("${pageTitle}", "${topic}") = ${sim.toFixed(4)}`);
         if (sim > maxSimilarity) {

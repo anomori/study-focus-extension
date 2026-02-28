@@ -601,6 +601,34 @@ const StatisticsStorage = {
             studyTopicsImported: 0
         };
 
+        // インポートデータのバリデーション
+        if (data.patienceEvents && !Array.isArray(data.patienceEvents)) {
+            throw new Error('Invalid patienceEvents: expected array');
+        }
+        if (data.browsingSessions && !Array.isArray(data.browsingSessions)) {
+            throw new Error('Invalid browsingSessions: expected array');
+        }
+        if (data.studyTopics && !Array.isArray(data.studyTopics)) {
+            throw new Error('Invalid studyTopics: expected array');
+        }
+
+        // 各レコードをサニタイズ（不正な型のレコードを除外）
+        if (data.patienceEvents) {
+            data.patienceEvents = data.patienceEvents.filter(e =>
+                e && typeof e.domain === 'string' && typeof e.timestamp === 'number' && typeof e.date === 'string'
+            );
+        }
+        if (data.browsingSessions) {
+            data.browsingSessions = data.browsingSessions.filter(s =>
+                s && typeof s.domain === 'string' && typeof s.startTime === 'number' && typeof s.duration === 'number'
+            );
+        }
+        if (data.studyTopics) {
+            data.studyTopics = data.studyTopics.filter(t =>
+                t && typeof t.topic === 'string'
+            );
+        }
+
         // 我慢回数データ
         if (data.patienceEvents) {
             if (mode === 'replace') {
@@ -660,9 +688,9 @@ const StatisticsStorage = {
                 const existing = await chrome.storage.local.get('studyTopics');
                 const existingTopics = existing.studyTopics || [];
 
-                // 重複を避けてマージ（textで判定）
-                const existingTexts = new Set(existingTopics.map(t => t.text));
-                const newTopics = data.studyTopics.filter(t => !existingTexts.has(t.text));
+                // 重複を避けてマージ（topicで判定）
+                const existingTexts = new Set(existingTopics.map(t => t.topic));
+                const newTopics = data.studyTopics.filter(t => !existingTexts.has(t.topic));
 
                 await chrome.storage.local.set({
                     studyTopics: [...existingTopics, ...newTopics]

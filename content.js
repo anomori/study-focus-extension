@@ -141,20 +141,23 @@ async function onUrlChange() {
 }
 
 function blockContent(title, message) {
-    document.body.innerHTML = `
-        <div style="
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #000; color: #fff; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; z-index: 999999;
-            font-family: sans-serif;
-        ">
-            <h1>⛔ ${title} ⛔</h1>
-            <p>${message}</p>
-        </div>
-    `;
-    // Stop video playback if possible
-    const videos = document.querySelectorAll('video');
-    videos.forEach(v => v.pause());
+    // Stop video/audio playback BEFORE replacing DOM
+    document.querySelectorAll('video, audio').forEach(el => {
+        try { el.pause(); el.src = ''; } catch (e) { /* ignore */ }
+    });
+
+    const container = document.createElement('div');
+    container.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:999999;font-family:sans-serif;';
+
+    const h1 = document.createElement('h1');
+    h1.textContent = '⛔ ' + title + ' ⛔';
+    const p = document.createElement('p');
+    p.textContent = message;
+
+    container.appendChild(h1);
+    container.appendChild(p);
+    document.body.innerHTML = '';
+    document.body.appendChild(container);
 }
 
 // 3. Similarity Check
@@ -359,10 +362,10 @@ async function showDistractionOverlay(score) {
     }
 
     // デバッグモードの場合のみスコアを表示
-    let scoreText = '';
+    let scoreTextStr = '';
     if (isDebugMode) {
         const template = typeof I18n !== 'undefined' ? I18n.getMessage('overlay_score') : '類似度スコア: {score} (判定: 低)';
-        scoreText = `<p>${template.replace('{score}', score.toFixed(2))}</p>`;
+        scoreTextStr = template.replace('{score}', score.toFixed(2));
     }
 
     const title = typeof I18n !== 'undefined' ? I18n.getMessage('overlay_title') : '⚠️ 勉強に関係ありますか？';
@@ -371,18 +374,38 @@ async function showDistractionOverlay(score) {
 
     const overlay = document.createElement('div');
     overlay.id = 'distraction-overlay';
-    overlay.innerHTML = `
-        <div class="distraction-content">
-            <h2>${title}</h2>
-            ${scoreText}
-            <p>${message}</p>
-            <button id="dismiss-overlay">${dismissText}</button>
-            <div class="annoying-element">🥺</div>
-        </div>
-    `;
+
+    const content = document.createElement('div');
+    content.className = 'distraction-content';
+
+    const h2 = document.createElement('h2');
+    h2.textContent = title;
+    content.appendChild(h2);
+
+    if (scoreTextStr) {
+        const scoreP = document.createElement('p');
+        scoreP.textContent = scoreTextStr;
+        content.appendChild(scoreP);
+    }
+
+    const msgP = document.createElement('p');
+    msgP.textContent = message;
+    content.appendChild(msgP);
+
+    const dismissBtn = document.createElement('button');
+    dismissBtn.id = 'dismiss-overlay';
+    dismissBtn.textContent = dismissText;
+    content.appendChild(dismissBtn);
+
+    const annoying = document.createElement('div');
+    annoying.className = 'annoying-element';
+    annoying.textContent = '🥺';
+    content.appendChild(annoying);
+
+    overlay.appendChild(content);
     document.body.appendChild(overlay);
 
-    document.getElementById('dismiss-overlay').addEventListener('click', () => {
+    dismissBtn.addEventListener('click', () => {
         overlay.remove();
         isOverlayShowing = false;
 

@@ -219,11 +219,11 @@ const I18n = (() => {
             'month_1': '1月', 'month_2': '2月', 'month_3': '3月', 'month_4': '4月',
             'month_5': '5月', 'month_6': '6月', 'month_7': '7月', 'month_8': '8月',
             'month_9': '9月', 'month_10': '10月', 'month_11': '11月', 'month_12': '12月',
-            'year_month_format': '{year}年{month}月',
+            'year_month_format': '{year}年{month}',
             'year_format': '{year}年',
             'total_suffix': '（合計）',
             'day_names': ['日', '月', '火', '水', '木', '金', '土'],
-            'date_format': '{month}月{day}日（{weekday}）'
+            'date_format': '{month}{day}日（{weekday}）'
         },
         en: {
             // ========== Common ==========

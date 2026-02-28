@@ -207,8 +207,7 @@ async function recordBrowsingSession(session) {
       startTime: session.startTime,
       endTime,
       duration,
-      isCheckEnabled: session.isCheckEnabled,
-      isBlockEnabled: session.isBlockEnabled,
+      isBlockingEnabled: session.isBlockEnabled,
       date,
       hour
     });

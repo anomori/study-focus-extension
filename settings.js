@@ -1,6 +1,11 @@
 // settings.js
 // 詳細設定ページのロジック
 
+// HTMLエスケープ（XSS防止）
+function escapeHtml(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     // i18n初期化を最初に行う
     await I18n.init();
@@ -353,7 +358,7 @@ function showDetailForIndex(key, stats) {
 
 function renderDomainList(domainData, container) {
     if (domainData.length === 0) {
-        container.innerHTML = `<div class="no-data"><div class="no-data-icon">📭</div><p>${I18n.getMessage('no_data')}</p></div>`;
+        container.innerHTML = `<div class="no-data"><div class="no-data-icon">📭</div><p>${escapeHtml(I18n.getMessage('no_data'))}</p></div>`;
         return;
     }
 
@@ -361,8 +366,8 @@ function renderDomainList(domainData, container) {
     container.innerHTML = top10.map((item, i) => `
         <div class="detail-item">
             <span class="rank">${i + 1}.</span>
-            <span class="domain">${item.domain}</span>
-            <span class="time">${StatisticsStorage.formatDuration(item.time)}</span>
+            <span class="domain">${escapeHtml(item.domain)}</span>
+            <span class="time">${escapeHtml(StatisticsStorage.formatDuration(item.time))}</span>
         </div>
     `).join('');
 }
@@ -413,8 +418,8 @@ async function loadSiteSettings() {
     const allowlistEl = document.getElementById('allowlist');
     allowlistEl.innerHTML = settings.allowlist.map(domain => `
         <li>
-            <span class="domain-text">${domain}</span>
-            <button class="remove-btn" data-domain="${domain}" data-list="allowlist">${removeText}</button>
+            <span class="domain-text">${escapeHtml(domain)}</span>
+            <button class="remove-btn" data-domain="${escapeHtml(domain)}" data-list="allowlist">${escapeHtml(removeText)}</button>
         </li>
     `).join('');
 
@@ -422,8 +427,8 @@ async function loadSiteSettings() {
     const blocklistEl = document.getElementById('blocklist');
     blocklistEl.innerHTML = settings.blocklist.map(domain => `
         <li>
-            <span class="domain-text">${domain}</span>
-            <button class="remove-btn" data-domain="${domain}" data-list="blocklist">${removeText}</button>
+            <span class="domain-text">${escapeHtml(domain)}</span>
+            <button class="remove-btn" data-domain="${escapeHtml(domain)}" data-list="blocklist">${escapeHtml(removeText)}</button>
         </li>
     `).join('');
 
@@ -431,8 +436,8 @@ async function loadSiteSettings() {
     const patternsEl = document.getElementById('blocked-patterns');
     patternsEl.innerHTML = settings.blockedPatterns.map(p => `
         <li>
-            <span class="domain-text">${p.domain}${p.pathPattern}</span>
-            <button class="remove-btn" data-domain="${p.domain}" data-path="${p.pathPattern}" data-list="pattern">${removeText}</button>
+            <span class="domain-text">${escapeHtml(p.domain)}${escapeHtml(p.pathPattern)}</span>
+            <button class="remove-btn" data-domain="${escapeHtml(p.domain)}" data-path="${escapeHtml(p.pathPattern)}" data-list="pattern">${escapeHtml(removeText)}</button>
         </li>
     `).join('');
 
