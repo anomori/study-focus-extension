@@ -6,7 +6,8 @@
   "permissions": [
     "storage",
     "offscreen",
-    "tabs"
+    "tabs",
+    "alarms"
   ],
   "host_permissions": [
     "<all_urls>"

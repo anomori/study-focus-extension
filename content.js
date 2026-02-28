@@ -2,7 +2,6 @@
 console.log("Study Focus Guard: Content script loaded.");
 
 const RELEVANCE_THRESHOLD = 0.35;
-let recheckTimeoutId = null;
 let isOverlayShowing = false;
 
 // Known distraction domains to penalize (for score calculation only)
@@ -105,12 +104,6 @@ async function onUrlChange() {
 
         if (!checkEnabled && !blockEnabled) return;
 
-        // Clear any pending recheck
-        if (recheckTimeoutId) {
-            clearTimeout(recheckTimeoutId);
-            recheckTimeoutId = null;
-        }
-
         const siteSettings = await checkSiteSettings();
 
         // If allowlisted, skip all checks
@@ -131,8 +124,11 @@ async function onUrlChange() {
             blockContent(title, message);
         } else {
             removeDistractionOverlay();
+            // Clear dismiss cooldown on URL change (new page should be checked)
+            dismissCooldownUntil = 0;
             if (checkEnabled) {
-                checkRelevance();
+                checkRelevance(true); // Force check on URL change
+                scheduleNextCheck(); // Reset periodic timer to 30s from now
             }
         }
     } catch (e) {
@@ -162,8 +158,23 @@ function blockContent(title, message) {
 }
 
 // 3. Similarity Check
-async function checkRelevance() {
+async function checkRelevance(force = false) {
     try {
+        const now = Date.now();
+
+        // Throttle: skip if checked too recently (unless forced by URL change)
+        if (!force && lastCheckTime && (now - lastCheckTime < MIN_CHECK_GAP)) {
+            console.log(`[checkRelevance] Skipping (last check was ${Math.round((now - lastCheckTime) / 1000)}s ago, min gap: ${MIN_CHECK_GAP / 1000}s)`);
+            return;
+        }
+
+        // Skip if in dismiss cooldown (unless forced by URL change)
+        if (!force && dismissCooldownUntil && now < dismissCooldownUntil) {
+            console.log(`[checkRelevance] Skipping (dismiss cooldown, ${Math.round((dismissCooldownUntil - now) / 1000)}s remaining)`);
+            return;
+        }
+
+        lastCheckTime = now;
         console.log('[checkRelevance] Starting relevance check...');
 
         // Check if check feature is enabled
@@ -375,18 +386,13 @@ async function showDistractionOverlay(score) {
         overlay.remove();
         isOverlayShowing = false;
 
-        // Schedule recheck after 2 minutes
-        recheckTimeoutId = setTimeout(() => {
-            // Check if context is still valid before rechecking
-            if (!chrome.runtime?.id) {
-                console.log('Extension context invalidated. Skipping recheck.');
-                return;
-            }
-            console.log("2 minutes passed. Re-checking relevance...");
-            checkRelevance();
-        }, 2 * 60 * 1000); // 2 minutes = 120000ms
+        // Set dismiss cooldown: periodic checks will be skipped for 2 minutes
+        dismissCooldownUntil = Date.now() + 2 * 60 * 1000;
 
-        console.log("Overlay dismissed. Recheck scheduled in 2 minutes.");
+        // Reschedule next check after 2 minutes (replaces the 30s periodic timer)
+        scheduleNextCheck(2 * 60 * 1000);
+
+        console.log("Overlay dismissed. Next check in 2 minutes (cooldown active).");
     });
 }
 
@@ -426,27 +432,41 @@ window.addEventListener('beforeunload', () => {
 
 // Periodic check interval (30 seconds)
 const PERIODIC_CHECK_INTERVAL = 30 * 1000; // 30 seconds
-let periodicCheckIntervalId = null;
+const MIN_CHECK_GAP = 10 * 1000; // Minimum gap between any two checks (10 seconds)
+let periodicCheckTimeoutId = null;
+let lastCheckTime = 0;
+let dismissCooldownUntil = 0; // Timestamp until which checks should be skipped after overlay dismiss
 
-function startPeriodicCheck() {
-    if (periodicCheckIntervalId) return; // Already running
-    periodicCheckIntervalId = setInterval(() => {
+function scheduleNextCheck(delay = PERIODIC_CHECK_INTERVAL) {
+    // Cancel any existing scheduled check
+    if (periodicCheckTimeoutId) {
+        clearTimeout(periodicCheckTimeoutId);
+        periodicCheckTimeoutId = null;
+    }
+    periodicCheckTimeoutId = setTimeout(() => {
+        periodicCheckTimeoutId = null;
         // Check if context is still valid
         if (!chrome.runtime?.id) {
             console.log('Extension context invalidated. Stopping periodic check.');
-            stopPeriodicCheck();
             return;
         }
         console.log("Periodic check (30s interval)...");
         checkRelevance();
-    }, PERIODIC_CHECK_INTERVAL);
+        // Schedule next check after this one completes
+        scheduleNextCheck();
+    }, delay);
+}
+
+function startPeriodicCheck() {
+    if (periodicCheckTimeoutId) return; // Already scheduled
+    scheduleNextCheck();
     console.log("Periodic check started (every 30 seconds).");
 }
 
 function stopPeriodicCheck() {
-    if (periodicCheckIntervalId) {
-        clearInterval(periodicCheckIntervalId);
-        periodicCheckIntervalId = null;
+    if (periodicCheckTimeoutId) {
+        clearTimeout(periodicCheckTimeoutId);
+        periodicCheckTimeoutId = null;
         console.log("Periodic check stopped.");
     }
 }
@@ -456,16 +476,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'CHECK_FEATURE_TOGGLED') {
         if (message.enabled) {
             console.log("Check feature enabled. Running check...");
-            checkRelevance();
+            dismissCooldownUntil = 0; // Clear any dismiss cooldown
+            checkRelevance(true);
             startPeriodicCheck();
         } else {
             console.log("Check feature disabled. Removing overlays...");
             removeDistractionOverlay();
             stopPeriodicCheck();
-            if (recheckTimeoutId) {
-                clearTimeout(recheckTimeoutId);
-                recheckTimeoutId = null;
-            }
+            dismissCooldownUntil = 0;
         }
     }
 

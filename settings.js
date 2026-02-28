@@ -72,6 +72,34 @@ let currentDate = new Date();
 let currentView = 'day';
 let usageChart = null;
 let selectedBarIndex = null;
+let cachedTimezone = null;
+
+// チャートクリックハンドラ生成（renderChart内で共有）
+function createChartClickHandler(data, keys, stats) {
+    return (event, elements) => {
+        if (elements.length > 0) {
+            const index = elements[0].index;
+            selectedBarIndex = index;
+
+            const newColors = data.map((_, i) =>
+                i === index ? 'rgba(0, 217, 255, 1)' : 'rgba(0, 217, 255, 0.4)'
+            );
+            usageChart.data.datasets[0].backgroundColor = newColors;
+            usageChart.update('none');
+
+            showDetailForIndex(keys[index], stats);
+        } else {
+            if (selectedBarIndex !== null) {
+                selectedBarIndex = null;
+                const defaultColors = data.map(() => 'rgba(0, 217, 255, 0.6)');
+                usageChart.data.datasets[0].backgroundColor = defaultColors;
+                usageChart.update('none');
+
+                showDetailForIndex(null, stats);
+            }
+        }
+    };
+}
 
 function initStatistics() {
     // ビュー切り替え
@@ -130,8 +158,11 @@ async function updateChart() {
     const filter = document.getElementById('blocking-filter').value;
     const filterBlocking = filter === 'all' ? null : filter === 'on';
 
-    // タイムゾーン設定を取得
-    const timezone = await getTimezoneSetting();
+    // タイムゾーン設定をキャッシュから取得（初回のみストレージアクセス）
+    if (!cachedTimezone) {
+        cachedTimezone = await getTimezoneSetting();
+    }
+    const timezone = cachedTimezone;
 
     // 期間表示を更新
     updatePeriodDisplay();
@@ -192,8 +223,18 @@ async function updateChart() {
 function renderChart(labels, data, stats, keys) {
     const ctx = document.getElementById('usage-chart').getContext('2d');
 
+    // 既存チャートがあればデータ更新のみ（destroy + new を避ける）
     if (usageChart) {
-        usageChart.destroy();
+        const backgroundColors = data.map((_, i) =>
+            i === selectedBarIndex ? 'rgba(0, 217, 255, 1)' : 'rgba(0, 217, 255, 0.6)'
+        );
+        usageChart.data.labels = labels;
+        usageChart.data.datasets[0].data = data;
+        usageChart.data.datasets[0].backgroundColor = backgroundColors;
+        // onClickコールバックを更新するためoptionsを差し替え
+        usageChart.options.onClick = createChartClickHandler(data, keys, stats);
+        usageChart.update('none');
+        return;
     }
 
     const backgroundColors = data.map((_, i) =>
@@ -216,32 +257,7 @@ function renderChart(labels, data, stats, keys) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            onClick: (event, elements) => {
-                if (elements.length > 0) {
-                    const index = elements[0].index;
-                    selectedBarIndex = index;
-
-                    // ハイライト更新（アニメーションなし）
-                    const newColors = data.map((_, i) =>
-                        i === index ? 'rgba(0, 217, 255, 1)' : 'rgba(0, 217, 255, 0.4)'
-                    );
-                    usageChart.data.datasets[0].backgroundColor = newColors;
-                    usageChart.update('none');
-
-                    // キーを使って詳細表示
-                    showDetailForIndex(keys[index], stats);
-                } else {
-                    // 背景クリックで選択解除
-                    if (selectedBarIndex !== null) {
-                        selectedBarIndex = null;
-                        const defaultColors = data.map(() => 'rgba(0, 217, 255, 0.6)');
-                        usageChart.data.datasets[0].backgroundColor = defaultColors;
-                        usageChart.update('none');
-
-                        showDetailForIndex(null, stats);
-                    }
-                }
-            },
+            onClick: createChartClickHandler(data, keys, stats),
             plugins: {
                 legend: {
                     display: false

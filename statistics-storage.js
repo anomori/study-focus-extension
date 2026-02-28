@@ -211,15 +211,53 @@ const StatisticsStorage = {
         Object.values(stats.patience).forEach(group => totalPatience += group.count);
         stats.totals.patienceCount = totalPatience;
 
-        // ドメイン別集計（フィルタリング後のセッションから）
-        const filteredSessions = this.filterSessionsByDate(browsingSessions, startDate, endDate, timezone);
-        stats.totals.browsingByDomain = this.aggregateByDomain(filteredSessions);
+        // ドメイン別集計（groupBrowsingSessions で既にフィルタリング済みのデータを使う）
+        const allDomains = {};
+        Object.values(stats.browsing).forEach(group => {
+            Object.entries(group.domains).forEach(([domain, time]) => {
+                allDomains[domain] = (allDomains[domain] || 0) + time;
+            });
+        });
+        stats.totals.browsingByDomain = Object.entries(allDomains)
+            .sort((a, b) => b[1] - a[1])
+            .map(([domain, time]) => ({ domain, time }));
 
         return stats;
     },
 
-    // タイムゾーン考慮の日付文字列取得
+    // DateTimeFormatterキャッシュ（タイムゾーンごとに1つだけ生成）
+    _formatterCache: {},
+    _dateStringCache: new Map(),
+    _dateStringCacheTimezone: null,
+
+    _getFormatter(timezone) {
+        if (!this._formatterCache[timezone]) {
+            this._formatterCache[timezone] = new Intl.DateTimeFormat('ja-JP', {
+                timeZone: timezone,
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            });
+        }
+        return this._formatterCache[timezone];
+    },
+
+    // タイムゾーンが変わったらキャッシュをクリア
+    _ensureDateStringCache(timezone) {
+        if (this._dateStringCacheTimezone !== timezone) {
+            this._dateStringCache.clear();
+            this._dateStringCacheTimezone = timezone;
+        }
+    },
+
+    // タイムゾーン考慮の日付文字列取得（キャッシュ付き）
     getDateStringInTimezone(timestamp, timezone) {
+        this._ensureDateStringCache(timezone);
+
+        const cached = this._dateStringCache.get(timestamp);
+        if (cached !== undefined) return cached;
+
+        let result;
         try {
             if (/^[+-]\d{2}:\d{2}$/.test(timezone)) {
                 const date = new Date(timestamp);
@@ -230,25 +268,23 @@ const StatisticsStorage = {
                 const offsetMs = sign * (hours * 60 + minutes) * 60 * 1000;
 
                 const localDate = new Date(date.getTime() + offsetMs);
-                return localDate.toISOString().split('T')[0];
+                result = localDate.toISOString().split('T')[0];
+            } else {
+                // キャッシュされたformatterを使用
+                const formatter = this._getFormatter(timezone);
+                const parts = formatter.formatToParts(new Date(timestamp));
+                const year = parts.find(p => p.type === 'year').value;
+                const month = parts.find(p => p.type === 'month').value;
+                const day = parts.find(p => p.type === 'day').value;
+                result = `${year}-${month}-${day}`;
             }
-
-            // For IANA timezones, we construct YYYY-MM-DD manually to ensure correct format
-            const formatter = new Intl.DateTimeFormat('ja-JP', {
-                timeZone: timezone,
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit'
-            });
-            const parts = formatter.formatToParts(new Date(timestamp));
-            const year = parts.find(p => p.type === 'year').value;
-            const month = parts.find(p => p.type === 'month').value;
-            const day = parts.find(p => p.type === 'day').value;
-            return `${year}-${month}-${day}`;
         } catch (e) {
             console.error('Invalid timezone:', timezone, e);
-            return new Date(timestamp).toISOString().split('T')[0]; // Fallback to UTC
+            result = new Date(timestamp).toISOString().split('T')[0]; // Fallback to UTC
         }
+
+        this._dateStringCache.set(timestamp, result);
+        return result;
     },
 
     filterSessionsByDate(sessions, startDate, endDate, timezone) {

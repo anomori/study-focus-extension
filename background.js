@@ -76,10 +76,12 @@ chrome.runtime.onInstalled.addListener(() => {
   createOffscreenDocument();
   checkFirstRunDialog();
   purgeOldStats();
+  recheckTimers();
 });
 chrome.runtime.onStartup.addListener(() => {
   createOffscreenDocument();
   purgeOldStats();
+  recheckTimers();
 });
 
 // Clean up tab scores and sessions when tab is closed
@@ -99,9 +101,14 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
   }
 
   // Start new session for active tab
-  const tab = await chrome.tabs.get(activeInfo.tabId);
-  if (tab.url) {
-    await startSession(activeInfo.tabId, tab.url);
+  try {
+    const tab = await chrome.tabs.get(activeInfo.tabId);
+    if (tab.url) {
+      await startSession(activeInfo.tabId, tab.url);
+    }
+  } catch (e) {
+    // Tab may have been closed between activation event and get call
+    console.warn('[onActivated] Tab no longer exists:', activeInfo.tabId);
   }
 });
 
@@ -360,6 +367,36 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
 
+  // Handle timer set from popup
+  if (message.type === 'SET_TIMER') {
+    (async () => {
+      try {
+        const alarmName = `feature-timer-${message.feature}`;
+        await chrome.alarms.create(alarmName, { when: message.fireAt });
+        sendResponse({ success: true });
+      } catch (e) {
+        console.error('[SET_TIMER] Error:', e);
+        sendResponse({ success: false, error: e.message });
+      }
+    })();
+    return true;
+  }
+
+  // Handle timer cancel from popup
+  if (message.type === 'CANCEL_TIMER') {
+    (async () => {
+      try {
+        const alarmName = `feature-timer-${message.feature}`;
+        await chrome.alarms.clear(alarmName);
+        sendResponse({ success: true });
+      } catch (e) {
+        console.error('[CANCEL_TIMER] Error:', e);
+        sendResponse({ success: false, error: e.message });
+      }
+    })();
+    return true;
+  }
+
   // Handle relevance check
   if (message.type === 'CHECK_RELEVANCE') {
     (async () => {
@@ -387,3 +424,119 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
 });
+
+// ========== タイマー自動切替機能 ==========
+
+// アラーム発火時のハンドラー
+chrome.alarms.onAlarm.addListener(async (alarm) => {
+  if (!alarm.name.startsWith('feature-timer-')) return;
+
+  const feature = alarm.name.replace('feature-timer-', ''); // 'check' or 'block'
+  const storageKey = `timer_${feature}`;
+  const data = await chrome.storage.local.get(storageKey);
+  const timer = data[storageKey];
+
+  if (!timer) return;
+
+  // 機能をON/OFF切替
+  await applyTimerAction(feature, timer.action);
+
+  console.log(`[Timer] ${feature} feature turned ${timer.action}`);
+
+  // 繰り返しタイマーの場合：翌日の同時刻に再スケジュール
+  if (timer.repeat && timer.repeatTime) {
+    const [h, m] = timer.repeatTime.split(':').map(Number);
+    const nextFire = new Date();
+    nextFire.setDate(nextFire.getDate() + 1);
+    nextFire.setHours(h, m, 0, 0);
+    const newFireAt = nextFire.getTime();
+
+    // ストレージ更新
+    timer.fireAt = newFireAt;
+    await chrome.storage.local.set({ [storageKey]: timer });
+
+    // アラーム再登録
+    const alarmName = `feature-timer-${feature}`;
+    await chrome.alarms.create(alarmName, { when: newFireAt });
+
+    console.log(`[Timer] Repeat timer re-scheduled: ${feature}, next at ${nextFire.toLocaleString()}`);
+  } else {
+    // タイマーデータをクリーンアップ
+    await chrome.storage.local.remove(storageKey);
+  }
+});
+
+// タイマーアクションを適用
+async function applyTimerAction(feature, action) {
+  const enabled = action === 'on';
+
+  if (feature === 'check') {
+    await chrome.storage.local.set({ checkFeatureEnabled: enabled });
+    // 全タブに通知
+    const tabs = await chrome.tabs.query({});
+    for (const tab of tabs) {
+      if (tab.id) {
+        chrome.tabs.sendMessage(tab.id, {
+          type: 'CHECK_FEATURE_TOGGLED',
+          enabled: enabled
+        }).catch(() => {});
+      }
+    }
+  } else if (feature === 'block') {
+    await chrome.storage.local.set({ blockFeatureEnabled: enabled });
+    const tabs = await chrome.tabs.query({});
+    for (const tab of tabs) {
+      if (tab.id) {
+        chrome.tabs.sendMessage(tab.id, {
+          type: 'BLOCK_FEATURE_TOGGLED',
+          enabled: enabled
+        }).catch(() => {});
+      }
+    }
+  }
+}
+
+// 起動時に未実行タイマーを再評価・再登録
+async function recheckTimers() {
+  const features = ['check', 'block'];
+  const now = Date.now();
+
+  for (const feature of features) {
+    const storageKey = `timer_${feature}`;
+    const data = await chrome.storage.local.get(storageKey);
+    const timer = data[storageKey];
+
+    if (!timer) continue;
+
+    if (timer.fireAt <= now) {
+      if (timer.repeat && timer.repeatTime) {
+        // 繰り返しタイマー: 期限超過でも即時適用し、次回をスケジュール
+        await applyTimerAction(feature, timer.action);
+
+        const [h, m] = timer.repeatTime.split(':').map(Number);
+        const nextFire = new Date();
+        nextFire.setHours(h, m, 0, 0);
+        // 今日の時刻がまだ先ならそれを使う。過ぎていたら翌日
+        if (nextFire.getTime() <= now) {
+          nextFire.setDate(nextFire.getDate() + 1);
+        }
+        timer.fireAt = nextFire.getTime();
+        await chrome.storage.local.set({ [storageKey]: timer });
+
+        const alarmName = `feature-timer-${feature}`;
+        await chrome.alarms.create(alarmName, { when: timer.fireAt });
+        console.log(`[Timer] Repeat timer re-scheduled on startup: ${feature}, next at ${nextFire.toLocaleString()}`);
+      } else {
+        // 一回限り: 期限超過 → 即時適用してクリーンアップ
+        await applyTimerAction(feature, timer.action);
+        await chrome.storage.local.remove(storageKey);
+        console.log(`[Timer] Applying overdue timer: ${feature} → ${timer.action}`);
+      }
+    } else {
+      // まだ到達していない → アラームを再登録
+      const alarmName = `feature-timer-${feature}`;
+      await chrome.alarms.create(alarmName, { when: timer.fireAt });
+      console.log(`[Timer] Re-registered alarm: ${feature}, fires at ${new Date(timer.fireAt).toLocaleString()}`);
+    }
+  }
+}

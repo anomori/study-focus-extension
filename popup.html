@@ -272,6 +272,21 @@
         <div id="score-status" data-i18n="score_loading">スコアを取得中...</div>
     </div>
 
+    <!-- 詳細設定ボタン -->
+    <div id="settings-section" style="margin-bottom: 12px; text-align: center;">
+        <button id="open-settings" data-i18n="settings_button" style="
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #2a3a5c 0%, #2a5090 100%);
+            border: 1px solid rgba(0, 217, 255, 0.4);
+            border-radius: 8px;
+            color: #00d9ff;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        ">⚙️ 詳細設定・統計を見る</button>
+    </div>
+
     <!-- 判定機能ON/OFF -->
     <div id="check-toggle-section" style="
         display: flex;
@@ -297,13 +312,150 @@
         background: #2a3a5c;
         border-radius: 8px;
         padding: 10px 12px;
-        margin-bottom: 12px;
+        margin-bottom: 8px;
     ">
         <span data-i18n="block_toggle" style="font-size: 13px;">🛡️ ブロック機能</span>
         <label class="toggle-switch">
             <input type="checkbox" id="block-toggle">
             <span class="toggle-slider"></span>
         </label>
+    </div>
+
+    <!-- 統合タイマーセクション -->
+    <div id="timer-panel" style="
+        background: #1e2d4a;
+        border: 1px solid #2a5090;
+        border-radius: 8px;
+        padding: 10px 12px;
+        margin-bottom: 12px;
+    ">
+        <div style="font-size: 12px; color: #00d9ff; margin-bottom: 8px; font-weight: bold;"
+            data-i18n="timer_title">⏰ 自動切替タイマー</div>
+
+        <!-- Row 1: 判定機能のアクション + ブロック機能のアクション -->
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 4px;">
+                <span style="font-size: 11px; color: #888;">🔍</span>
+                <span style="font-size: 11px; color: #ccc;" data-i18n="timer_target_check">判定</span>
+                <select id="timer-check-action" style="
+                    padding: 3px 6px; font-size: 11px;
+                    background: #2a3a5c; color: #eaeaea; border: 1px solid #2a5090;
+                    border-radius: 4px; cursor: pointer;
+                ">
+                    <option value="none" data-i18n="timer_action_none">-</option>
+                    <option value="on" data-i18n="timer_action_on">ONにする</option>
+                    <option value="off" data-i18n="timer_action_off">OFFにする</option>
+                </select>
+            </div>
+            <div style="display: flex; align-items: center; gap: 4px;">
+                <span style="font-size: 11px; color: #888;">🛡️</span>
+                <span style="font-size: 11px; color: #ccc;" data-i18n="timer_target_block">ブロック</span>
+                <select id="timer-block-action" style="
+                    padding: 3px 6px; font-size: 11px;
+                    background: #2a3a5c; color: #eaeaea; border: 1px solid #2a5090;
+                    border-radius: 4px; cursor: pointer;
+                ">
+                    <option value="none" data-i18n="timer_action_none">-</option>
+                    <option value="on" data-i18n="timer_action_on">ONにする</option>
+                    <option value="off" data-i18n="timer_action_off">OFFにする</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Row 2: モード選択 -->
+        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+            <select id="timer-mode" style="
+                padding: 3px 6px; font-size: 11px;
+                background: #2a3a5c; color: #eaeaea; border: 1px solid #2a5090;
+                border-radius: 4px; cursor: pointer;
+            ">
+                <option value="preset" data-i18n="timer_mode_relative">プリセット</option>
+                <option value="duration" data-i18n="timer_mode_duration">○時間○分後</option>
+                <option value="absolute" data-i18n="timer_mode_absolute">時刻指定</option>
+            </select>
+        </div>
+
+        <!-- Row 3a: プリセット選択 (mode=preset) -->
+        <div id="timer-preset-row" style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px; flex-wrap: wrap;">
+            <select id="timer-preset" style="
+                padding: 3px 6px; font-size: 11px;
+                background: #2a3a5c; color: #eaeaea; border: 1px solid #2a5090;
+                border-radius: 4px; cursor: pointer;
+            ">
+                <option value="5" data-i18n="timer_preset_5">5分</option>
+                <option value="10" data-i18n="timer_preset_10">10分</option>
+                <option value="15" data-i18n="timer_preset_15">15分</option>
+                <option value="30" data-i18n="timer_preset_30" selected>30分</option>
+                <option value="60" data-i18n="timer_preset_60">1時間</option>
+                <option value="90" data-i18n="timer_preset_90">1.5時間</option>
+                <option value="120" data-i18n="timer_preset_120">2時間</option>
+                <option value="180" data-i18n="timer_preset_180">3時間</option>
+                <option value="360" data-i18n="timer_preset_360">6時間</option>
+            </select>
+            <span style="font-size: 11px; color: #ccc;" data-i18n="timer_after">後に</span>
+        </div>
+
+        <!-- Row 3b: 時間+分入力 (mode=duration) -->
+        <div id="timer-duration-row" style="display: none; align-items: center; gap: 4px; margin-bottom: 6px;">
+            <input type="number" id="timer-hours" min="0" max="24" value="0" style="
+                width: 40px; padding: 3px 4px; font-size: 11px; text-align: center;
+                background: #2a3a5c; color: #eaeaea; border: 1px solid #2a5090;
+                border-radius: 4px;
+            ">
+            <span style="font-size: 11px; color: #888;" data-i18n="timer_hours">時間</span>
+            <input type="number" id="timer-minutes-input" min="0" max="59" value="30" style="
+                width: 40px; padding: 3px 4px; font-size: 11px; text-align: center;
+                background: #2a3a5c; color: #eaeaea; border: 1px solid #2a5090;
+                border-radius: 4px;
+            ">
+            <span style="font-size: 11px; color: #888;" data-i18n="timer_mins">分</span>
+            <span style="font-size: 11px; color: #ccc;" data-i18n="timer_after">後に</span>
+        </div>
+
+        <!-- Row 3c: 時刻指定 (mode=absolute) -->
+        <div id="timer-absolute-row" style="display: none; align-items: center; gap: 4px; margin-bottom: 6px;">
+            <input type="time" id="timer-time" style="
+                padding: 3px 6px; font-size: 11px;
+                background: #2a3a5c; color: #eaeaea; border: 1px solid #2a5090;
+                border-radius: 4px;
+            ">
+            <span style="font-size: 11px; color: #ccc;" data-i18n="timer_at">に</span>
+        </div>
+
+        <!-- Row 4: 繰り返し + セットボタン -->
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+            <label id="timer-repeat-label" style="display: none; align-items: center; gap: 4px; font-size: 11px; color: #aaa; cursor: pointer;">
+                <input type="checkbox" id="timer-repeat" style="width: 13px; height: 13px; cursor: pointer;">
+                <span data-i18n="timer_repeat_daily">毎日繰り返す</span>
+            </label>
+            <button id="timer-set-btn" data-i18n="timer_set" style="
+                margin-left: auto;
+                padding: 5px 14px; font-size: 11px; background: #00d9ff; color: #000;
+                border: none; border-radius: 4px; cursor: pointer; font-weight: bold;
+            ">セット</button>
+        </div>
+
+        <!-- アクティブタイマー表示 -->
+        <div id="active-timers" style="margin-top: 6px; border-top: 1px solid #2a5090; padding-top: 6px;">
+            <div id="check-timer-status" style="display: none; align-items: center; gap: 6px; margin-bottom: 4px; font-size: 11px; color: #00d9ff;">
+                <span style="color: #888;">🔍</span>
+                <span id="check-timer-remaining" style="flex: 1;"></span>
+                <button id="check-timer-cancel" data-i18n="timer_cancel" style="
+                    padding: 2px 8px; font-size: 10px; background: #ff4d4d; color: white;
+                    border: none; border-radius: 3px; cursor: pointer;
+                ">解除</button>
+            </div>
+            <div id="block-timer-status" style="display: none; align-items: center; gap: 6px; margin-bottom: 4px; font-size: 11px; color: #00d9ff;">
+                <span style="color: #888;">🛡️</span>
+                <span id="block-timer-remaining" style="flex: 1;"></span>
+                <button id="block-timer-cancel" data-i18n="timer_cancel" style="
+                    padding: 2px 8px; font-size: 10px; background: #ff4d4d; color: white;
+                    border: none; border-radius: 3px; cursor: pointer;
+                ">解除</button>
+            </div>
+            <div id="no-active-timers" style="font-size: 10px; color: #555; text-align: center;"
+                data-i18n="timer_not_set">未設定</div>
+        </div>
     </div>
 
 
@@ -320,21 +472,6 @@
     <ul id="topic-list">
         <!-- Topics here -->
     </ul>
-
-    <!-- 詳細設定ボタン -->
-    <div id="settings-section" style="margin-top: 16px; text-align: center;">
-        <button id="open-settings" data-i18n="settings_button" style="
-            width: 100%;
-            padding: 10px;
-            background: linear-gradient(135deg, #2a3a5c 0%, #2a5090 100%);
-            border: 1px solid rgba(0, 217, 255, 0.4);
-            border-radius: 8px;
-            color: #00d9ff;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.2s;
-        ">⚙️ 詳細設定・統計を見る</button>
-    </div>
 
     <script src="i18n.js"></script>
     <script src="popup.js"></script>

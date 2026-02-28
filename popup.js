@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     loadTopics();
     checkSystemStatus();
     loadCurrentScore();
+    initTimers();
 
     document.getElementById('add-btn').addEventListener('click', addTopic);
     document.getElementById('new-topic').addEventListener('keypress', (e) => {
@@ -276,4 +277,184 @@ function renderTopics(topics) {
         li.appendChild(removeBtn);
         list.appendChild(li);
     });
+}
+
+// ========== タイマー機能（統合版） ==========
+let timerUpdateInterval = null;
+
+function initTimers() {
+    // モード切替
+    const modeSelect = document.getElementById('timer-mode');
+    modeSelect.addEventListener('change', updateTimerModeUI);
+
+    // 時刻入力のデフォルト値を現在時刻+1時間に
+    const now = new Date();
+    now.setHours(now.getHours() + 1);
+    now.setMinutes(0);
+    const defaultTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    document.getElementById('timer-time').value = defaultTime;
+
+    // セットボタン
+    document.getElementById('timer-set-btn').addEventListener('click', setTimer);
+
+    // 解除ボタン
+    document.getElementById('check-timer-cancel').addEventListener('click', () => cancelTimer('check'));
+    document.getElementById('block-timer-cancel').addEventListener('click', () => cancelTimer('block'));
+
+    // 既存タイマーの表示更新
+    loadTimerStatus();
+
+    // 1秒ごとに残り時間を更新
+    timerUpdateInterval = setInterval(loadTimerStatus, 1000);
+}
+
+function updateTimerModeUI() {
+    const mode = document.getElementById('timer-mode').value;
+    document.getElementById('timer-preset-row').style.display = mode === 'preset' ? 'flex' : 'none';
+    document.getElementById('timer-duration-row').style.display = mode === 'duration' ? 'flex' : 'none';
+    document.getElementById('timer-absolute-row').style.display = mode === 'absolute' ? 'flex' : 'none';
+
+    // 繰り返しは時刻指定モードのみ表示
+    const repeatLabel = document.getElementById('timer-repeat-label');
+    if (mode !== 'absolute') {
+        document.getElementById('timer-repeat').checked = false;
+        repeatLabel.style.display = 'none';
+    } else {
+        repeatLabel.style.display = 'flex';
+    }
+}
+
+function computeFireAt() {
+    const mode = document.getElementById('timer-mode').value;
+
+    if (mode === 'preset') {
+        const minutes = parseInt(document.getElementById('timer-preset').value, 10);
+        if (!minutes || minutes <= 0) return null;
+        return Date.now() + minutes * 60 * 1000;
+    }
+
+    if (mode === 'duration') {
+        const hours = parseInt(document.getElementById('timer-hours').value, 10) || 0;
+        const mins = parseInt(document.getElementById('timer-minutes-input').value, 10) || 0;
+        const totalMs = (hours * 60 + mins) * 60 * 1000;
+        if (totalMs <= 0) return null;
+        return Date.now() + totalMs;
+    }
+
+    if (mode === 'absolute') {
+        const timeStr = document.getElementById('timer-time').value;
+        if (!timeStr) return null;
+        const [h, m] = timeStr.split(':').map(Number);
+        const target = new Date();
+        target.setHours(h, m, 0, 0);
+        // 過去の時刻なら翌日にする
+        if (target.getTime() <= Date.now()) {
+            target.setDate(target.getDate() + 1);
+        }
+        return target.getTime();
+    }
+
+    return null;
+}
+
+async function setTimer() {
+    const fireAt = computeFireAt();
+    if (!fireAt) return;
+
+    const checkAction = document.getElementById('timer-check-action').value; // 'on', 'off', 'none'
+    const blockAction = document.getElementById('timer-block-action').value; // 'on', 'off', 'none'
+
+    // 両方未選択なら何もしない
+    if (checkAction === 'none' && blockAction === 'none') return;
+
+    const mode = document.getElementById('timer-mode').value;
+    const repeat = document.getElementById('timer-repeat').checked && mode === 'absolute';
+    const repeatTime = repeat ? document.getElementById('timer-time').value : null;
+
+    // 各機能ごとにタイマーをセット
+    const entries = [
+        { feature: 'check', action: checkAction },
+        { feature: 'block', action: blockAction }
+    ];
+
+    for (const { feature, action } of entries) {
+        if (action === 'none') continue;
+
+        const timerData = { feature, action, fireAt, repeat, repeatTime };
+        const storageKey = `timer_${feature}`;
+        await chrome.storage.local.set({ [storageKey]: timerData });
+
+        await chrome.runtime.sendMessage({
+            type: 'SET_TIMER',
+            feature: feature,
+            fireAt: fireAt
+        });
+    }
+
+    await loadTimerStatus();
+}
+
+async function cancelTimer(feature) {
+    try {
+        await chrome.runtime.sendMessage({
+            type: 'CANCEL_TIMER',
+            feature: feature
+        });
+        await chrome.storage.local.remove(`timer_${feature}`);
+        await loadTimerStatus();
+        console.log(`[Timer] Cancelled timer for ${feature}`);
+    } catch (e) {
+        console.error(`[Timer] Failed to cancel timer for ${feature}:`, e);
+    }
+}
+
+async function loadTimerStatus() {
+    await updateTimerDisplay('check');
+    await updateTimerDisplay('block');
+
+    // check/block両方未設定なら「未設定」表示
+    const checkData = await chrome.storage.local.get('timer_check');
+    const blockData = await chrome.storage.local.get('timer_block');
+    const checkActive = checkData.timer_check && checkData.timer_check.fireAt > Date.now();
+    const blockActive = blockData.timer_block && blockData.timer_block.fireAt > Date.now();
+    document.getElementById('no-active-timers').style.display = (!checkActive && !blockActive) ? 'block' : 'none';
+}
+
+async function updateTimerDisplay(feature) {
+    const storageKey = `timer_${feature}`;
+    const data = await chrome.storage.local.get(storageKey);
+    const timer = data[storageKey];
+
+    const statusEl = document.getElementById(`${feature}-timer-status`);
+    const remainingEl = document.getElementById(`${feature}-timer-remaining`);
+
+    if (timer && timer.fireAt > Date.now()) {
+        const remaining = timer.fireAt - Date.now();
+        const mins = Math.floor(remaining / 60000);
+        const secs = Math.floor((remaining % 60000) / 1000);
+
+        let timeStr;
+        if (mins >= 60) {
+            const hours = Math.floor(mins / 60);
+            const remMins = mins % 60;
+            timeStr = `${hours}h ${remMins}m ${secs}s`;
+        } else {
+            timeStr = `${mins}m ${secs}s`;
+        }
+
+        const actionLabel = timer.action === 'on'
+            ? I18n.getMessage('timer_action_on')
+            : I18n.getMessage('timer_action_off');
+
+        const repeatLabel = timer.repeat ? ` ${I18n.getMessage('timer_daily_repeat')}` : '';
+        remainingEl.textContent = `${I18n.getMessage('timer_remaining', { time: timeStr })} → ${actionLabel}${repeatLabel}`;
+        statusEl.style.display = 'flex';
+    } else {
+        statusEl.style.display = 'none';
+
+        // 期限切れタイマーをクリーンアップ（繰り返し以外）
+        if (timer && timer.fireAt <= Date.now() && !timer.repeat) {
+            await chrome.storage.local.remove(storageKey);
+        }
+    }
 }
