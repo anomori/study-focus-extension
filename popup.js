@@ -213,19 +213,33 @@ async function removeTopic(topicName) {
     renderTopics(topics);
 }
 
-async function toggleTopic(topicName) {
+async function toggleTopic(topicName, toggleInput) {
     const data = await chrome.storage.local.get('studyTopics');
     let topics = data.studyTopics || [];
 
+    let newEnabled = null;
     topics = topics.map(t => {
         if (t.topic === topicName) {
-            return { ...t, enabled: !t.enabled };
+            newEnabled = !t.enabled;
+            return { ...t, enabled: newEnabled };
         }
         return t;
     });
 
     await chrome.storage.local.set({ studyTopics: topics });
-    renderTopics(topics);
+
+    // DOM を直接更新してアニメーションを保持
+    if (toggleInput && newEnabled !== null) {
+        const li = toggleInput.closest('li');
+        if (li) {
+            const nameSpan = li.querySelector('.topic-name');
+            if (nameSpan) {
+                nameSpan.classList.toggle('disabled', !newEnabled);
+            }
+        }
+    } else {
+        renderTopics(topics);
+    }
 }
 
 function renderTopics(topics) {
@@ -251,7 +265,7 @@ function renderTopics(topics) {
         const toggleInput = document.createElement('input');
         toggleInput.type = 'checkbox';
         toggleInput.checked = enabled;
-        toggleInput.addEventListener('change', () => toggleTopic(topicName));
+        toggleInput.addEventListener('change', () => toggleTopic(topicName, toggleInput));
 
         const toggleSlider = document.createElement('span');
         toggleSlider.className = 'toggle-slider';
