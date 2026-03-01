@@ -1,440 +1,494 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>D/F/V/E 採点表 + 補強計画 — Study Focus Guard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
 
-<!-- Mobile Menu Toggle -->
-<button class="menu-toggle" id="menuToggle" aria-label="メニューを開く">☰</button>
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <!-- Mobile Menu Toggle -->
+  <button class="menu-toggle" id="menuToggle" aria-label="メニューを開く">☰</button>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-<div class="page-wrapper">
+  <div class="page-wrapper">
 
-  <!-- ========== Sidebar ========== -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-      <div class="sidebar-logo">
-        <span class="logo-icon">📊</span>
-        D/F/V/E 採点表
-      </div>
-    </div>
-    <div class="sidebar-label">セクション</div>
-    <ul class="sidebar-nav" id="sidebarNav">
-      <li><a href="#scoring"><span class="nav-number">01</span>採点表</a></li>
-      <li><a href="#total"><span class="nav-number">02</span>総合スコア</a></li>
-      <li><a href="#reinforcement"><span class="nav-number">03</span>補強計画</a></li>
-      <li><a href="#target"><span class="nav-number">04</span>補強後の目標</a></li>
-    </ul>
-    <div class="sidebar-label" style="margin-top: var(--space-xl);">関連文書</div>
-    <ul class="sidebar-nav">
-      <li><a href="index.html"><span class="nav-number">📘</span>事業計画書</a></li>
-      <li><a href="lean-canvas.html"><span class="nav-number">📄</span>簡易事業書1枚</a></li>
-    </ul>
-  </aside>
-
-  <!-- ========== Main ========== -->
-  <main class="main-content">
-
-    <!-- Hero -->
-    <section class="hero" id="top">
-      <div class="hero-inner">
-        <div class="hero-badge">
-          <span class="badge-dot"></span>
-          <abbr title="Desirability(欲求性)・Feasibility(実現性)・Viability(事業性) — IDEO発のプロダクト評価フレームワーク">DVF</abbr> + Ethicality フレームワーク
-        </div>
-        <h1>D/F/V/E 採点表<br>+ 補強計画</h1>
-        <p class="subtitle">
-          IDEO発DVFフレームワーク + 授業独自の倫理性（E）評価。<br>
-          David J C Morris Weighted DVFモデル（非線形 1-3-9 スケール）でスコアリング。
-        </p>
-        <div class="hero-stats">
-          <div class="hero-stat">
-            <div class="stat-value">7.50</div>
-            <div class="stat-label">現在スコア / 9.00</div>
-          </div>
-          <div class="hero-stat">
-            <div class="stat-value">83.3%</div>
-            <div class="stat-label">達成率</div>
-          </div>
-          <div class="hero-stat">
-            <div class="stat-value">9.00</div>
-            <div class="stat-label">目標スコア</div>
-          </div>
+    <!-- ========== Sidebar ========== -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <span class="logo-icon">📊</span>
+          D/F/V/E 採点表
         </div>
       </div>
-    </section>
+      <div class="sidebar-label">セクション</div>
+      <ul class="sidebar-nav" id="sidebarNav">
+        <li><a href="#scoring"><span class="nav-number">01</span>採点表</a></li>
+        <li><a href="#total"><span class="nav-number">02</span>総合スコア</a></li>
+        <li><a href="#reinforcement"><span class="nav-number">03</span>補強計画</a></li>
+        <li><a href="#target"><span class="nav-number">04</span>補強後の目標</a></li>
+      </ul>
+      <div class="sidebar-label" style="margin-top: var(--space-xl);">関連文書</div>
+      <ul class="sidebar-nav">
+        <li><a href="index.html"><span class="nav-number">📘</span>事業計画書</a></li>
+        <li><a href="lean-canvas.html"><span class="nav-number">📄</span>簡易事業書1枚</a></li>
+      </ul>
+    </aside>
 
-    <div class="content-container">
+    <!-- ========== Main ========== -->
+    <main class="main-content">
 
-      <!-- ===================== 1. Scoring Table ===================== -->
-      <section class="section" id="scoring">
-        <div class="section-header">
-          <h2><span class="section-number">1</span>採点表</h2>
-        </div>
-
-        <!-- Score Gauge + Bars -->
-        <div class="score-section">
-          <div class="score-gauge">
-            <svg viewBox="0 0 160 160">
-              <defs>
-                <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" style="stop-color: #3b82f6;" />
-                  <stop offset="50%" style="stop-color: #8b5cf6;" />
-                  <stop offset="100%" style="stop-color: #10b981;" />
-                </linearGradient>
-              </defs>
-              <circle class="score-gauge-bg" cx="80" cy="80" r="70" />
-              <circle class="score-gauge-fill" cx="80" cy="80" r="70" />
-            </svg>
-            <div class="score-gauge-label">
-              <div class="score-gauge-value">83.3</div>
-              <div class="score-gauge-text">% 達成</div>
-            </div>
+      <!-- Hero -->
+      <section class="hero" id="top">
+        <div class="hero-inner">
+          <div class="hero-badge">
+            <span class="badge-dot"></span>
+            <abbr title="Desirability(欲求性)・Feasibility(実現性)・Viability(事業性) — IDEO発のプロダクト評価フレームワーク">DVF</abbr> +
+            Ethicality フレームワーク
           </div>
-          <div class="score-bars">
-            <div class="score-bar-item">
-              <div class="score-bar-label">🎯 D: Desirability</div>
-              <div class="score-bar-track"><div class="score-bar-fill score-bar-fill-high" style="width: 100%;"></div></div>
-              <div class="score-bar-value">9/9</div>
+          <h1>D/F/V/E 採点表<br>+ 補強計画</h1>
+          <p class="subtitle">
+            IDEO発DVFフレームワーク + 授業独自の倫理性（E）評価。<br>
+            David J C Morris Weighted DVFモデル（非線形 1-3-9 スケール）でスコアリング。
+          </p>
+          <div class="hero-stats">
+            <div class="hero-stat">
+              <div class="stat-value">7.50</div>
+              <div class="stat-label">現在スコア / 9.00</div>
             </div>
-            <div class="score-bar-item">
-              <div class="score-bar-label">⚙️ F: Feasibility</div>
-              <div class="score-bar-track"><div class="score-bar-fill score-bar-fill-high" style="width: 100%;"></div></div>
-              <div class="score-bar-value">9/9</div>
+            <div class="hero-stat">
+              <div class="stat-value">83.3%</div>
+              <div class="stat-label">達成率</div>
             </div>
-            <div class="score-bar-item">
-              <div class="score-bar-label">💰 V: Viability</div>
-              <div class="score-bar-track"><div class="score-bar-fill score-bar-fill-medium" style="width: 33.3%;"></div></div>
-              <div class="score-bar-value">3/9</div>
+            <div class="hero-stat">
+              <div class="stat-value">9.00</div>
+              <div class="stat-label">目標スコア</div>
             </div>
-            <div class="score-bar-item">
-              <div class="score-bar-label">🛡️ E: Ethicality</div>
-              <div class="score-bar-track"><div class="score-bar-fill score-bar-fill-high" style="width: 100%;"></div></div>
-              <div class="score-bar-value">9/9</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Detailed Scoring Cards -->
-        <div class="card-grid card-grid-2" style="margin-top: var(--space-xl);">
-          <!-- D: Desirability -->
-          <div class="card" style="border-left: 4px solid var(--primary-500);">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-              <div>
-                <h4 style="margin-top: 0; color: var(--primary-700);">D: Desirability（欲求性）</h4>
-              </div>
-              <span style="font-size: 1.5rem; font-weight: 900; color: var(--primary-600); font-family: var(--font-mono);">9/9</span>
-            </div>
-            <ul class="feature-list" style="margin-top: var(--space-sm);">
-              <li><span class="feature-icon">📊</span><span><abbr title="経済協力開発機構">OECD</abbr> <abbr title="学習到達度の国際的な評価プログラム">PISA</abbr> 2022: 59%がデバイスによる脱線を報告</span></li>
-              <li><span class="feature-icon">📱</span><span>Studyplus: 高3の約半数がSNSしながら勉強</span></li>
-              <li><span class="feature-icon">⏱️</span><span>McCoy (2020): 授業時間の19.4%が非授業目的</span></li>
-              <li><span class="feature-icon">🌊</span><span>デジタルデトックスブランド登場（社会的機運）</span></li>
-            </ul>
-          </div>
-
-          <!-- F: Feasibility -->
-          <div class="card" style="border-left: 4px solid var(--success-500);">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-              <div>
-                <h4 style="margin-top: 0; color: var(--success-700);">F: Feasibility（実現性）</h4>
-              </div>
-              <span style="font-size: 1.5rem; font-weight: 900; color: var(--success-600); font-family: var(--font-mono);">9/9</span>
-            </div>
-            <ul class="feature-list" style="margin-top: var(--space-sm);">
-              <li><span class="feature-icon">✅</span><span>v1.0.2がChrome Web Store公開中</span></li>
-              <li><span class="feature-icon">⚡</span><span>Transformers.js v4で4倍高速化可能</span></li>
-              <li><span class="feature-icon">🏪</span><span>Manifest V3準拠でChrome Web Store公開済み</span></li>
-              <li><span class="feature-icon">💰</span><span>1人開発でコスト極小</span></li>
-            </ul>
-          </div>
-
-          <!-- V: Viability -->
-          <div class="card" style="border-left: 4px solid var(--warning-500);">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-              <div>
-                <h4 style="margin-top: 0; color: var(--warning-600);">V: Viability（事業性）</h4>
-              </div>
-              <span style="font-size: 1.5rem; font-weight: 900; color: var(--warning-600); font-family: var(--font-mono);">3/9 ⚠️</span>
-            </div>
-            <ul class="feature-list" style="margin-top: var(--space-sm);">
-              <li><span class="feature-icon">📈</span><span><abbr title="教育 × テクノロジー (Education Technology)">EdTech</abbr>市場<abbr title="年平均成長率 (Compound Annual Growth Rate)">CAGR</abbr> 12-19%で成長中</span></li>
-              <li><span class="feature-icon">💡</span><span><abbr title="基本無料 + 有料プレミアムの収益モデル">Freemium</abbr>モデルの実績豊富（Grammarly等）</span></li>
-              <li><span class="feature-icon">🏫</span><span><abbr title="企業対企業の取引 (Business to Business)">B2B</abbr>（教育委員会）チャネルの可能性あり</span></li>
-              <li><span class="feature-icon">📰</span><span>Freeプランのブロック画面広告で初期収益化を計画</span></li>
-              <li><span class="feature-icon">⚠️</span><span><strong>ただし広告収益・課金転換は未検証</strong></span></li>
-            </ul>
-          </div>
-
-          <!-- E: Ethicality -->
-          <div class="card" style="border-left: 4px solid var(--accent-500);">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-              <div>
-                <h4 style="margin-top: 0; color: #7c3aed;">E: Ethicality（倫理性）</h4>
-              </div>
-              <span style="font-size: 1.5rem; font-weight: 900; color: #7c3aed; font-family: var(--font-mono);">9/9</span>
-            </div>
-            <ul class="feature-list" style="margin-top: var(--space-sm);">
-              <li><span class="feature-icon">🔐</span><span>閲覧データの外部送信ゼロ（プライバシー保護）</span></li>
-              <li><span class="feature-icon">📜</span><span><abbr title="米国 家庭教育権・プライバシー法">FERPA</abbr>/<abbr title="米国 児童オンラインプライバシー保護法">COPPA</abbr>/<abbr title="EU 一般データ保護規則">GDPR</abbr>への準拠が容易</span></li>
-              <li><span class="feature-icon">🏅</span><span>Brisk Teaching同等のプライバシーファースト設計</span></li>
-              <li><span class="feature-icon">🤝</span><span>監視型ではなく「支援型」</span></li>
-            </ul>
           </div>
         </div>
       </section>
 
-      <!-- ===================== 2. Total Score ===================== -->
-      <section class="section" id="total">
-        <div class="section-header">
-          <h2><span class="section-number">2</span>総合スコア（重み付け）</h2>
-        </div>
+      <div class="content-container">
 
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr><th>軸</th><th>スコア</th><th>重み</th><th>計算</th></tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>D（Desirability）</strong></td>
-                <td>9</td>
-                <td>30%</td>
-                <td>9 × 0.30 = <strong>2.70</strong></td>
-              </tr>
-              <tr>
-                <td><strong>F（Feasibility）</strong></td>
-                <td>9</td>
-                <td>25%</td>
-                <td>9 × 0.25 = <strong>2.25</strong></td>
-              </tr>
-              <tr>
-                <td><strong>V（Viability）</strong></td>
-                <td>3</td>
-                <td>25%</td>
-                <td>3 × 0.25 = <strong>0.75</strong></td>
-              </tr>
-              <tr>
-                <td><strong>E（Ethicality）</strong></td>
-                <td>9</td>
-                <td>20%</td>
-                <td>9 × 0.20 = <strong>1.80</strong></td>
-              </tr>
-              <tr class="row-total">
-                <td>合計</td>
-                <td></td>
-                <td>100%</td>
-                <td>7.50 / 9.00（83.3%）</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- ===================== 3. Reinforcement Plan ===================== -->
-      <section class="section" id="reinforcement">
-        <div class="section-header">
-          <h2><span class="section-number">3</span>補強計画</h2>
-        </div>
-
-        <div class="callout callout-red">
-          <div class="callout-icon">🚨</div>
-          <div class="callout-content">
-            <p><strong>最優先: Viability（事業性）が唯一の Medium 評価 → 3→9 に引き上げるためのアクション</strong></p>
+        <!-- ===================== 1. Scoring Table ===================== -->
+        <section class="section" id="scoring">
+          <div class="section-header">
+            <h2><span class="section-number">1</span>採点表</h2>
           </div>
-        </div>
 
-        <div class="table-wrapper" style="margin-top: var(--space-lg);">
-          <table>
-            <thead>
-              <tr><th>補強アクション</th><th>目的</th><th>期限目安</th><th>期待効果</th></tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>月額課金モデルの検証</strong>（A/Bテスト）</td>
-                <td>Freemium転換率の実データ取得</td>
-                <td><span class="tag">2026 Q2</span></td>
-                <td><span class="badge badge-medium">V: 3→6</span> 転換率の根拠獲得</td>
-              </tr>
-              <tr>
-                <td><strong>B2Bパイロット</strong>（1校で導入実験）</td>
-                <td>教育機関の購買意欲を実証</td>
-                <td><span class="tag">2026 Q3</span></td>
-                <td><span class="badge badge-low">V: 6→9</span> B2B収益チャネル検証</td>
-              </tr>
-              <tr>
-                <td><strong>年間売上シミュレーション作成</strong></td>
-                <td>投資家・審査員向け財務根拠</td>
-                <td><span class="tag">2026 Q2</span></td>
-                <td>プレゼン・事業書の説得力向上</td>
-              </tr>
-              <tr>
-                <td><strong>ユーザーインタビュー</strong>（高専生・大学生）</td>
-                <td>D: 9の維持 + 定性エビデンス強化</td>
-                <td><span class="tag">2026 Q1</span></td>
-                <td>D: 定量+定性の二重裏付け</td>
-              </tr>
-              <tr>
-                <td><strong>ベータテストで<abbr title="推奨度スコア — ユーザー満足度の指標 (Net Promoter Score)">NPS</abbr>取得</strong>（目標30-50名）</td>
-                <td>プロダクト品質の定量証明</td>
-                <td><span class="tag">2026 Q2</span></td>
-                <td>F: 9の維持 + ユーザー満足度根拠</td>
-              </tr>
-              <tr>
-                <td><strong>プライバシーポリシーの明文化</strong></td>
-                <td>E: 9の制度的裏付け</td>
-                <td><span class="tag">2026 Q1</span></td>
-                <td>E: 制度的なエビデンス追加</td>
-              </tr>
-              <tr>
-                <td><strong>Common Sense Privacy評価の取得</strong></td>
-                <td>E: 第三者認証による信頼性</td>
-                <td><span class="tag">2026 Q3</span></td>
-                <td>E: 客観的スコアの獲得</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- ===================== 4. Target Score ===================== -->
-      <section class="section" id="target">
-        <div class="section-header">
-          <h2><span class="section-number">4</span>補強後の目標スコア</h2>
-        </div>
-
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr><th>軸</th><th>現在</th><th>目標</th><th>条件</th></tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>D</strong></td>
-                <td><span style="font-family: var(--font-mono); font-weight: 700;">9</span></td>
-                <td><span style="font-family: var(--font-mono); font-weight: 700; color: var(--primary-600);">9（維持）</span></td>
-                <td>ユーザーインタビュー + NPS実施</td>
-              </tr>
-              <tr>
-                <td><strong>F</strong></td>
-                <td><span style="font-family: var(--font-mono); font-weight: 700;">9</span></td>
-                <td><span style="font-family: var(--font-mono); font-weight: 700; color: var(--success-600);">9（維持）</span></td>
-                <td>WebGPU対応 + ベータテスト完了</td>
-              </tr>
-              <tr>
-                <td><strong>V</strong></td>
-                <td><span style="font-family: var(--font-mono); font-weight: 700; color: var(--warning-600);">3</span></td>
-                <td><span style="font-family: var(--font-mono); font-weight: 900; color: var(--success-600);">9 ↑</span></td>
-                <td>課金検証 + B2Bパイロット + 財務シミュレーション</td>
-              </tr>
-              <tr>
-                <td><strong>E</strong></td>
-                <td><span style="font-family: var(--font-mono); font-weight: 700;">9</span></td>
-                <td><span style="font-family: var(--font-mono); font-weight: 700; color: #7c3aed;">9（維持）</span></td>
-                <td>プライバシーポリシー + Common Sense評価</td>
-              </tr>
-              <tr class="row-highlight">
-                <td><strong>合計</strong></td>
-                <td><span style="font-family: var(--font-mono); font-weight: 700;">7.50（83.3%）</span></td>
-                <td><span style="font-family: var(--font-mono); font-weight: 900; color: var(--success-600);">9.00（100%）</span></td>
-                <td>全軸 High 達成</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Visual comparison: Before / After -->
-        <h3>Before → After ビジュアル</h3>
-        <div class="card-grid card-grid-2" style="margin-top: var(--space-md);">
-          <div class="card" style="text-align: center;">
-            <h4 style="margin-top: 0; color: var(--gray-500);">現在のスコア</h4>
-            <div class="score-gauge" style="margin: var(--space-md) auto;">
+          <!-- Score Gauge + Bars -->
+          <div class="score-section">
+            <div class="score-gauge">
               <svg viewBox="0 0 160 160">
                 <defs>
-                  <linearGradient id="gaugeGradientBefore" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" style="stop-color: #f59e0b;" />
-                    <stop offset="100%" style="stop-color: #3b82f6;" />
+                  <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color: #3b82f6;" />
+                    <stop offset="50%" style="stop-color: #8b5cf6;" />
+                    <stop offset="100%" style="stop-color: #10b981;" />
                   </linearGradient>
                 </defs>
                 <circle class="score-gauge-bg" cx="80" cy="80" r="70" />
-                <circle fill="none" stroke="url(#gaugeGradientBefore)" stroke-width="10" stroke-linecap="round" cx="80" cy="80" r="70" stroke-dasharray="440" stroke-dashoffset="73" style="transform: rotate(-90deg); transform-origin: center;" />
+                <circle class="score-gauge-fill" cx="80" cy="80" r="70" />
               </svg>
               <div class="score-gauge-label">
-                <div class="score-gauge-value">7.50</div>
-                <div class="score-gauge-text">/ 9.00</div>
+                <div class="score-gauge-value">83.3</div>
+                <div class="score-gauge-text">% 達成</div>
               </div>
             </div>
-            <p style="font-size: 0.82rem; color: var(--gray-500);">83.3% 達成</p>
-          </div>
-          <div class="card" style="text-align: center; border-color: var(--success-300); background: var(--success-50);">
-            <h4 style="margin-top: 0; color: var(--success-700);">目標スコア</h4>
-            <div class="score-gauge" style="margin: var(--space-md) auto;">
-              <svg viewBox="0 0 160 160">
-                <defs>
-                  <linearGradient id="gaugeGradientAfter" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" style="stop-color: #10b981;" />
-                    <stop offset="100%" style="stop-color: #059669;" />
-                  </linearGradient>
-                </defs>
-                <circle class="score-gauge-bg" cx="80" cy="80" r="70" />
-                <circle fill="none" stroke="url(#gaugeGradientAfter)" stroke-width="10" stroke-linecap="round" cx="80" cy="80" r="70" stroke-dasharray="440" stroke-dashoffset="0" style="transform: rotate(-90deg); transform-origin: center;" />
-              </svg>
-              <div class="score-gauge-label">
-                <div class="score-gauge-value" style="color: var(--success-700);">9.00</div>
-                <div class="score-gauge-text">/ 9.00</div>
+            <div class="score-bars">
+              <div class="score-bar-item">
+                <div class="score-bar-label">D: Desirability</div>
+                <div class="score-bar-track">
+                  <div class="score-bar-fill score-bar-fill-high" style="width: 100%;"></div>
+                </div>
+                <div class="score-bar-value">9/9</div>
+              </div>
+              <div class="score-bar-item">
+                <div class="score-bar-label">⚙️ F: Feasibility</div>
+                <div class="score-bar-track">
+                  <div class="score-bar-fill score-bar-fill-high" style="width: 100%;"></div>
+                </div>
+                <div class="score-bar-value">9/9</div>
+              </div>
+              <div class="score-bar-item">
+                <div class="score-bar-label">💰 V: Viability</div>
+                <div class="score-bar-track">
+                  <div class="score-bar-fill score-bar-fill-medium" style="width: 33.3%;"></div>
+                </div>
+                <div class="score-bar-value">3/9</div>
+              </div>
+              <div class="score-bar-item">
+                <div class="score-bar-label">🛡️ E: Ethicality</div>
+                <div class="score-bar-track">
+                  <div class="score-bar-fill score-bar-fill-high" style="width: 100%;"></div>
+                </div>
+                <div class="score-bar-value">9/9</div>
               </div>
             </div>
-            <p style="font-size: 0.82rem; color: var(--success-600); font-weight: 600;">100% 達成 🎉</p>
           </div>
-        </div>
-      </section>
 
-      <!-- Footer -->
-      <footer class="doc-footer">
-        <p>Study Focus Guard — D/F/V/E 採点表 + 補強計画 | 2026年2月</p>
-        <p>© 盛髙 雄寛（熊本高専）</p>
-      </footer>
+          <!-- Detailed Scoring Cards -->
+          <div class="card-grid card-grid-2" style="margin-top: var(--space-xl);">
+            <!-- D: Desirability -->
+            <div class="card" style="border-left: 4px solid var(--primary-500);">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                  <h4 style="margin-top: 0; color: var(--primary-700);">D: Desirability（欲求性）</h4>
+                </div>
+                <span
+                  style="font-size: 1.5rem; font-weight: 900; color: var(--primary-600); font-family: var(--font-mono);">9/9</span>
+              </div>
+              <ul class="feature-list" style="margin-top: var(--space-sm);">
+                <li><span class="feature-icon">📊</span><span><abbr title="経済協力開発機構">OECD</abbr> <abbr
+                      title="学習到達度の国際的な評価プログラム">PISA</abbr> 2022: 59%がデバイスによる脱線を報告</span></li>
+                <li><span class="feature-icon">📱</span><span>Studyplus: 高3の約半数がSNSしながら勉強</span></li>
+                <li><span class="feature-icon">⏱️</span><span>McCoy (2020): 授業時間の19.4%が非授業目的</span></li>
+                <li><span class="feature-icon">🌊</span><span>デジタルデトックスブランド登場（社会的機運）</span></li>
+              </ul>
+            </div>
 
-    </div>
-  </main>
-</div>
+            <!-- F: Feasibility -->
+            <div class="card" style="border-left: 4px solid var(--success-500);">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                  <h4 style="margin-top: 0; color: var(--success-700);">F: Feasibility（実現性）</h4>
+                </div>
+                <span
+                  style="font-size: 1.5rem; font-weight: 900; color: var(--success-600); font-family: var(--font-mono);">9/9</span>
+              </div>
+              <ul class="feature-list" style="margin-top: var(--space-sm);">
+                <li><span class="feature-icon">✅</span><span>v1.0.2がChrome Web Store公開中</span></li>
+                <li><span class="feature-icon">⚡</span><span>Transformers.js v4で4倍高速化可能</span></li>
+                <li><span class="feature-icon">🏪</span><span>Manifest V3準拠でChrome Web Store公開済み</span></li>
+                <li><span class="feature-icon">💰</span><span>1人開発でコスト極小</span></li>
+              </ul>
+            </div>
 
-<button class="back-to-top" id="backToTop" aria-label="ページ上部へ">↑</button>
+            <!-- V: Viability -->
+            <div class="card" style="border-left: 4px solid var(--warning-500);">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                  <h4 style="margin-top: 0; color: var(--warning-600);">V: Viability（事業性）</h4>
+                </div>
+                <span
+                  style="font-size: 1.5rem; font-weight: 900; color: var(--warning-600); font-family: var(--font-mono);">3/9
+                  ⚠️</span>
+              </div>
+              <ul class="feature-list" style="margin-top: var(--space-sm);">
+                <li><span class="feature-icon">📈</span><span><abbr
+                      title="教育 × テクノロジー (Education Technology)">EdTech</abbr>市場<abbr
+                      title="年平均成長率 (Compound Annual Growth Rate)">CAGR</abbr> 12-19%で成長中</span></li>
+                <li><span class="feature-icon">💡</span><span><abbr
+                      title="基本無料 + 有料プレミアムの収益モデル">Freemium</abbr>モデルの実績豊富（Grammarly等）</span></li>
+                <li><span class="feature-icon">🏫</span><span><abbr
+                      title="企業対企業の取引 (Business to Business)">B2B</abbr>（教育委員会）チャネルの可能性あり</span></li>
+                <li><span class="feature-icon">📰</span><span>Freeプランのブロック画面広告で初期収益化を計画</span></li>
+                <li><span class="feature-icon">⚠️</span><span><strong>ただし広告収益・課金転換は未検証</strong></span></li>
+              </ul>
+            </div>
 
-<script>
-  const sections = document.querySelectorAll('.section');
-  const navLinks = document.querySelectorAll('.sidebar-nav a');
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        navLinks.forEach(link => {
-          link.classList.remove('active');
-          if (link.getAttribute('href') === '#' + entry.target.id) {
-            link.classList.add('active');
-          }
-        });
-      }
-    });
-  }, { rootMargin: '-20% 0px -70% 0px' });
-  sections.forEach(s => observer.observe(s));
+            <!-- E: Ethicality -->
+            <div class="card" style="border-left: 4px solid var(--accent-500);">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                  <h4 style="margin-top: 0; color: #7c3aed;">E: Ethicality（倫理性）</h4>
+                </div>
+                <span
+                  style="font-size: 1.5rem; font-weight: 900; color: #7c3aed; font-family: var(--font-mono);">9/9</span>
+              </div>
+              <ul class="feature-list" style="margin-top: var(--space-sm);">
+                <li><span class="feature-icon">🔐</span><span>閲覧データの外部送信ゼロ（プライバシー保護）</span></li>
+                <li><span class="feature-icon">📜</span><span><abbr title="米国 家庭教育権・プライバシー法">FERPA</abbr>/<abbr
+                      title="米国 児童オンラインプライバシー保護法">COPPA</abbr>/<abbr title="EU 一般データ保護規則">GDPR</abbr>への準拠が容易</span></li>
+                <li><span class="feature-icon">🏅</span><span>Brisk Teaching同等のプライバシーファースト設計</span></li>
+                <li><span class="feature-icon">🤝</span><span>監視型ではなく「支援型」</span></li>
+              </ul>
+            </div>
+          </div>
+        </section>
 
-  const backToTop = document.getElementById('backToTop');
-  window.addEventListener('scroll', () => backToTop.classList.toggle('visible', window.scrollY > 400));
-  backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+        <!-- ===================== 2. Total Score ===================== -->
+        <section class="section" id="total">
+          <div class="section-header">
+            <h2><span class="section-number">2</span>総合スコア（重み付け）</h2>
+          </div>
 
-  const menuToggle = document.getElementById('menuToggle');
-  const sidebar = document.getElementById('sidebar');
-  const overlay = document.getElementById('sidebarOverlay');
-  menuToggle.addEventListener('click', () => { sidebar.classList.toggle('open'); overlay.classList.toggle('show'); });
-  overlay.addEventListener('click', () => { sidebar.classList.remove('open'); overlay.classList.remove('show'); });
-</script>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>軸</th>
+                  <th>スコア</th>
+                  <th>重み</th>
+                  <th>計算</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>D（Desirability）</strong></td>
+                  <td>9</td>
+                  <td>30%</td>
+                  <td>9 × 0.30 = <strong>2.70</strong></td>
+                </tr>
+                <tr>
+                  <td><strong>F（Feasibility）</strong></td>
+                  <td>9</td>
+                  <td>25%</td>
+                  <td>9 × 0.25 = <strong>2.25</strong></td>
+                </tr>
+                <tr>
+                  <td><strong>V（Viability）</strong></td>
+                  <td>3</td>
+                  <td>25%</td>
+                  <td>3 × 0.25 = <strong>0.75</strong></td>
+                </tr>
+                <tr>
+                  <td><strong>E（Ethicality）</strong></td>
+                  <td>9</td>
+                  <td>20%</td>
+                  <td>9 × 0.20 = <strong>1.80</strong></td>
+                </tr>
+                <tr class="row-total">
+                  <td>合計</td>
+                  <td></td>
+                  <td>100%</td>
+                  <td>7.50 / 9.00（83.3%）</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ===================== 3. Reinforcement Plan ===================== -->
+        <section class="section" id="reinforcement">
+          <div class="section-header">
+            <h2><span class="section-number">3</span>補強計画</h2>
+          </div>
+
+          <div class="callout callout-red">
+            <div class="callout-icon">🚨</div>
+            <div class="callout-content">
+              <p><strong>最優先: Viability（事業性）が唯一の Medium 評価 → 3→9 に引き上げるためのアクション</strong></p>
+            </div>
+          </div>
+
+          <div class="table-wrapper" style="margin-top: var(--space-lg);">
+            <table>
+              <thead>
+                <tr>
+                  <th>補強アクション</th>
+                  <th>目的</th>
+                  <th>期限目安</th>
+                  <th>期待効果</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>月額課金モデルの検証</strong>（A/Bテスト）</td>
+                  <td>Freemium転換率の実データ取得</td>
+                  <td><span class="tag">2026 Q2</span></td>
+                  <td><span class="badge badge-medium">V: 3→6</span> 転換率の根拠獲得</td>
+                </tr>
+                <tr>
+                  <td><strong>B2Bパイロット</strong>（1校で導入実験）</td>
+                  <td>教育機関の購買意欲を実証</td>
+                  <td><span class="tag">2026 Q3</span></td>
+                  <td><span class="badge badge-low">V: 6→9</span> B2B収益チャネル検証</td>
+                </tr>
+                <tr>
+                  <td><strong>年間売上シミュレーション作成</strong></td>
+                  <td>投資家・審査員向け財務根拠</td>
+                  <td><span class="tag">2026 Q2</span></td>
+                  <td>プレゼン・事業書の説得力向上</td>
+                </tr>
+                <tr>
+                  <td><strong>ユーザーインタビュー</strong>（高専生・大学生）</td>
+                  <td>D: 9の維持 + 定性エビデンス強化</td>
+                  <td><span class="tag">2026 Q1</span></td>
+                  <td>D: 定量+定性の二重裏付け</td>
+                </tr>
+                <tr>
+                  <td><strong>ベータテストで<abbr
+                        title="推奨度スコア — ユーザー満足度の指標 (Net Promoter Score)">NPS</abbr>取得</strong>（目標30-50名）</td>
+                  <td>プロダクト品質の定量証明</td>
+                  <td><span class="tag">2026 Q2</span></td>
+                  <td>F: 9の維持 + ユーザー満足度根拠</td>
+                </tr>
+                <tr>
+                  <td><strong>プライバシーポリシーの明文化</strong></td>
+                  <td>E: 9の制度的裏付け</td>
+                  <td><span class="tag">2026 Q1</span></td>
+                  <td>E: 制度的なエビデンス追加</td>
+                </tr>
+                <tr>
+                  <td><strong>Common Sense Privacy評価の取得</strong></td>
+                  <td>E: 第三者認証による信頼性</td>
+                  <td><span class="tag">2026 Q3</span></td>
+                  <td>E: 客観的スコアの獲得</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ===================== 4. Target Score ===================== -->
+        <section class="section" id="target">
+          <div class="section-header">
+            <h2><span class="section-number">4</span>補強後の目標スコア</h2>
+          </div>
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>軸</th>
+                  <th>現在</th>
+                  <th>目標</th>
+                  <th>条件</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>D</strong></td>
+                  <td><span style="font-family: var(--font-mono); font-weight: 700;">9</span></td>
+                  <td><span
+                      style="font-family: var(--font-mono); font-weight: 700; color: var(--primary-600);">9（維持）</span>
+                  </td>
+                  <td>ユーザーインタビュー + NPS実施</td>
+                </tr>
+                <tr>
+                  <td><strong>F</strong></td>
+                  <td><span style="font-family: var(--font-mono); font-weight: 700;">9</span></td>
+                  <td><span
+                      style="font-family: var(--font-mono); font-weight: 700; color: var(--success-600);">9（維持）</span>
+                  </td>
+                  <td>WebGPU対応 + ベータテスト完了</td>
+                </tr>
+                <tr>
+                  <td><strong>V</strong></td>
+                  <td><span style="font-family: var(--font-mono); font-weight: 700; color: var(--warning-600);">3</span>
+                  </td>
+                  <td><span style="font-family: var(--font-mono); font-weight: 900; color: var(--success-600);">9
+                      ↑</span></td>
+                  <td>課金検証 + B2Bパイロット + 財務シミュレーション</td>
+                </tr>
+                <tr>
+                  <td><strong>E</strong></td>
+                  <td><span style="font-family: var(--font-mono); font-weight: 700;">9</span></td>
+                  <td><span style="font-family: var(--font-mono); font-weight: 700; color: #7c3aed;">9（維持）</span></td>
+                  <td>プライバシーポリシー + Common Sense評価</td>
+                </tr>
+                <tr class="row-highlight">
+                  <td><strong>合計</strong></td>
+                  <td><span style="font-family: var(--font-mono); font-weight: 700;">7.50（83.3%）</span></td>
+                  <td><span
+                      style="font-family: var(--font-mono); font-weight: 900; color: var(--success-600);">9.00（100%）</span>
+                  </td>
+                  <td>全軸 High 達成</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Visual comparison: Before / After -->
+          <h3>Before → After ビジュアル</h3>
+          <div class="card-grid card-grid-2" style="margin-top: var(--space-md);">
+            <div class="card" style="text-align: center;">
+              <h4 style="margin-top: 0; color: var(--gray-500);">現在のスコア</h4>
+              <div class="score-gauge" style="margin: var(--space-md) auto;">
+                <svg viewBox="0 0 160 160">
+                  <defs>
+                    <linearGradient id="gaugeGradientBefore" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" style="stop-color: #f59e0b;" />
+                      <stop offset="100%" style="stop-color: #3b82f6;" />
+                    </linearGradient>
+                  </defs>
+                  <circle class="score-gauge-bg" cx="80" cy="80" r="70" />
+                  <circle fill="none" stroke="url(#gaugeGradientBefore)" stroke-width="10" stroke-linecap="round"
+                    cx="80" cy="80" r="70" stroke-dasharray="440" stroke-dashoffset="73"
+                    style="transform: rotate(-90deg); transform-origin: center;" />
+                </svg>
+                <div class="score-gauge-label">
+                  <div class="score-gauge-value">7.50</div>
+                  <div class="score-gauge-text">/ 9.00</div>
+                </div>
+              </div>
+              <p style="font-size: 0.82rem; color: var(--gray-500);">83.3% 達成</p>
+            </div>
+            <div class="card"
+              style="text-align: center; border-color: var(--success-300); background: var(--success-50);">
+              <h4 style="margin-top: 0; color: var(--success-700);">目標スコア</h4>
+              <div class="score-gauge" style="margin: var(--space-md) auto;">
+                <svg viewBox="0 0 160 160">
+                  <defs>
+                    <linearGradient id="gaugeGradientAfter" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" style="stop-color: #10b981;" />
+                      <stop offset="100%" style="stop-color: #059669;" />
+                    </linearGradient>
+                  </defs>
+                  <circle class="score-gauge-bg" cx="80" cy="80" r="70" />
+                  <circle fill="none" stroke="url(#gaugeGradientAfter)" stroke-width="10" stroke-linecap="round" cx="80"
+                    cy="80" r="70" stroke-dasharray="440" stroke-dashoffset="0"
+                    style="transform: rotate(-90deg); transform-origin: center;" />
+                </svg>
+                <div class="score-gauge-label">
+                  <div class="score-gauge-value" style="color: var(--success-700);">9.00</div>
+                  <div class="score-gauge-text">/ 9.00</div>
+                </div>
+              </div>
+              <p style="font-size: 0.82rem; color: var(--success-600); font-weight: 600;">100% 達成 🎉</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="doc-footer">
+          <p>Study Focus Guard — D/F/V/E 採点表 + 補強計画 | 2026年2月</p>
+          <p>© 盛髙 雄寛（熊本高専）</p>
+        </footer>
+
+      </div>
+    </main>
+  </div>
+
+  <button class="back-to-top" id="backToTop" aria-label="ページ上部へ">↑</button>
+
+  <script>
+    const sections = document.querySelectorAll('.section');
+    const navLinks = document.querySelectorAll('.sidebar-nav a');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === '#' + entry.target.id) {
+              link.classList.add('active');
+            }
+          });
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    sections.forEach(s => observer.observe(s));
+
+    const backToTop = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => backToTop.classList.toggle('visible', window.scrollY > 400));
+    backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    menuToggle.addEventListener('click', () => { sidebar.classList.toggle('open'); overlay.classList.toggle('show'); });
+    overlay.addEventListener('click', () => { sidebar.classList.remove('open'); overlay.classList.remove('show'); });
+  </script>
 
 </body>
+
 </html>

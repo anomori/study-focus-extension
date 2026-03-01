@@ -21,7 +21,7 @@ const I18n = (() => {
             'no': 'いいえ',
 
             // ========== ポップアップ / Popup ==========
-            'popup_title': '🎯 勉強の脱線防止',
+            'popup_title': '勉強の脱線防止',
             'score_loading': 'スコアを取得中...',
             'score_none': 'スコアなし',
             'score_no_tab': 'タブ情報なし',
@@ -44,7 +44,7 @@ const I18n = (() => {
             'settings_button': '⚙️ 詳細設定・統計を見る',
 
             // ========== 設定ページ / Settings ==========
-            'settings_title': '🎯 詳細設定',
+            'settings_title': '詳細設定',
             'tab_statistics': '📊 統計',
             'tab_sites': '🌐 サイト設定',
             'tab_advanced': '⚙️ 詳細設定',
@@ -239,7 +239,7 @@ const I18n = (() => {
             'no': 'No',
 
             // ========== Popup ==========
-            'popup_title': '🎯 Study Focus Guard',
+            'popup_title': 'Study Focus Guard',
             'score_loading': 'Loading score...',
             'score_none': 'No score',
             'score_no_tab': 'No tab info',
@@ -262,7 +262,7 @@ const I18n = (() => {
             'settings_button': '⚙️ Settings & Statistics',
 
             // ========== Settings ==========
-            'settings_title': '🎯 Advanced Settings',
+            'settings_title': 'Advanced Settings',
             'tab_statistics': '📊 Statistics',
             'tab_sites': '🌐 Site Settings',
             'tab_advanced': '⚙️ Advanced',

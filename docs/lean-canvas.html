@@ -1,315 +1,332 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>簡易事業書1枚 — Study Focus Guard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
 
-<button class="menu-toggle" id="menuToggle" aria-label="メニューを開く">☰</button>
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <button class="menu-toggle" id="menuToggle" aria-label="メニューを開く">☰</button>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-<div class="page-wrapper">
+  <div class="page-wrapper">
 
-  <!-- ========== Sidebar ========== -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-      <div class="sidebar-logo">
-        <span class="logo-icon">📄</span>
-        簡易事業書1枚
+    <!-- ========== Sidebar ========== -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <span class="logo-icon">📄</span>
+          簡易事業書1枚
+        </div>
       </div>
-    </div>
-    <div class="sidebar-label">セクション</div>
-    <ul class="sidebar-nav" id="sidebarNav">
-      <li><a href="#uvp"><span class="nav-number">--</span><abbr title="独自の価値提案 (Unique Value Proposition)">UVP</abbr></a></li>
-      <li><a href="#lean-canvas"><span class="nav-number">01</span>Lean Canvas</a></li>
-      <li><a href="#market-summary"><span class="nav-number">02</span>市場環境</a></li>
-      <li><a href="#competitive-position"><span class="nav-number">03</span>競合ポジション</a></li>
-    </ul>
-    <div class="sidebar-label" style="margin-top: var(--space-xl);">関連文書</div>
-    <ul class="sidebar-nav">
-      <li><a href="index.html"><span class="nav-number">📘</span>事業計画書</a></li>
-      <li><a href="dfve.html"><span class="nav-number">📊</span>D/F/V/E 採点表</a></li>
-    </ul>
-  </aside>
+      <div class="sidebar-label">セクション</div>
+      <ul class="sidebar-nav" id="sidebarNav">
+        <li><a href="#uvp"><span class="nav-number">--</span><abbr
+              title="独自の価値提案 (Unique Value Proposition)">UVP</abbr></a></li>
+        <li><a href="#lean-canvas"><span class="nav-number">01</span>Lean Canvas</a></li>
+        <li><a href="#market-summary"><span class="nav-number">02</span>市場環境</a></li>
+        <li><a href="#competitive-position"><span class="nav-number">03</span>競合ポジション</a></li>
+      </ul>
+      <div class="sidebar-label" style="margin-top: var(--space-xl);">関連文書</div>
+      <ul class="sidebar-nav">
+        <li><a href="index.html"><span class="nav-number">📘</span>事業計画書</a></li>
+        <li><a href="dfve.html"><span class="nav-number">📊</span>D/F/V/E 採点表</a></li>
+      </ul>
+    </aside>
 
-  <!-- ========== Main ========== -->
-  <main class="main-content">
+    <!-- ========== Main ========== -->
+    <main class="main-content">
 
-    <!-- Hero -->
-    <section class="hero" id="top" style="padding: var(--space-3xl) var(--space-2xl);">
-      <div class="hero-inner">
-        <div class="hero-badge">
-          <span class="badge-dot"></span>
-          Lean Canvas — 1枚で全体を俯瞰
+      <!-- Hero -->
+      <section class="hero" id="top" style="padding: var(--space-3xl) var(--space-2xl);">
+        <div class="hero-inner">
+          <div class="hero-badge">
+            <span class="badge-dot"></span>
+            Lean Canvas — 1枚で全体を俯瞰
+          </div>
+          <h1>簡易事業書1枚</h1>
+          <p class="subtitle">Study Focus Guard のビジネスモデルを一目で把握</p>
         </div>
-        <h1>簡易事業書1枚</h1>
-        <p class="subtitle">Study Focus Guard のビジネスモデルを一目で把握</p>
+      </section>
+
+      <div class="content-container">
+
+        <!-- ===================== UVP ===================== -->
+        <section class="section" id="uvp">
+          <div class="callout callout-highlight">
+            <div class="callout-icon"></div>
+            <div class="callout-content">
+              <p style="font-size: 1.1rem; font-weight: 700;"><abbr
+                  title="独自の価値提案 (Unique Value Proposition)">UVP</abbr>: 「ブロックだけに頼らない。AIが理解する。」</p>
+              <p>ローカルAIがページのタイトルや見出しと勉強テーマの意味的関連性をリアルタイム判定し、脱線をピンポイント検知。閲覧データの外部送信ゼロ。</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================== Lean Canvas ===================== -->
+        <section class="section" id="lean-canvas">
+          <div class="section-header">
+            <h2><span class="section-number">1</span>Lean Canvas</h2>
+          </div>
+
+          <div class="lean-grid">
+            <!-- ① 課題 -->
+            <div class="lean-item">
+              <div class="lean-item-header">
+                <div class="lean-item-number">1</div>
+                <div class="lean-item-title">課題（Problem）</div>
+              </div>
+              <ul>
+                <li>学生がPC勉強中にSNS・動画に脱線し集中力を失う（高3の約50%がSNSしながら勉強）</li>
+                <li>既存ブロッカーはURL単位の一律ブロックで「調べ学習中の関連ページ」まで遮断</li>
+                <li>教育機関はWebフィルタリング必須だが「学習支援」レイヤーの製品が不在</li>
+              </ul>
+            </div>
+
+            <!-- ② 顧客セグメント -->
+            <div class="lean-item">
+              <div class="lean-item-header">
+                <div class="lean-item-number">2</div>
+                <div class="lean-item-title">顧客セグメント</div>
+              </div>
+              <p><strong>アーリーアダプター</strong>: 高専生・理系大学生（PC勉強、自己管理意識高い）</p>
+              <p><strong>将来</strong>: 中高生（<abbr
+                  title="Global Innovation Gateway for All — 文科省の全校端末配布構想">GIGA</abbr>スクール端末）、社会人（リモートワーク）</p>
+              <p><strong><abbr title="企業対企業の取引 (Business to Business)">B2B</abbr></strong>: 教育委員会、学校法人、学習塾</p>
+            </div>
+
+            <!-- ③ 独自の価値提案 -->
+            <div class="lean-item" style="border-color: var(--primary-300); background: var(--primary-50);">
+              <div class="lean-item-header">
+                <div class="lean-item-number">3</div>
+                <div class="lean-item-title">独自の価値提案（UVP）</div>
+              </div>
+              <p><strong>ローカルAI意味理解 × プライバシーファースト</strong></p>
+              <p>ページのタイトルや見出しの意味的類似度をAIでリアルタイム判定。閲覧データの外部送信ゼロで<abbr title="米国 家庭教育権・プライバシー法">FERPA</abbr>/<abbr
+                  title="米国 児童オンラインプライバシー保護法">COPPA</abbr>/<abbr title="EU 一般データ保護規則">GDPR</abbr>への準拠が容易。</p>
+            </div>
+
+            <!-- ④ ソリューション -->
+            <div class="lean-item">
+              <div class="lean-item-header">
+                <div class="lean-item-number">4</div>
+                <div class="lean-item-title">ソリューション</div>
+              </div>
+              <ul>
+                <li>AI意味的類似度判定（Multilingual MiniLM-L12-v2）でリアルタイム評価</li>
+                <li>閾値ベースの警告オーバーレイ（ブロックではなく「気づき」）</li>
+                <li>YouTube Shorts / Instagram 自動ブロック</li>
+                <li>学習統計ダッシュボード</li>
+              </ul>
+            </div>
+
+            <!-- ⑤ チャネル -->
+            <div class="lean-item">
+              <div class="lean-item-header">
+                <div class="lean-item-number">5</div>
+                <div class="lean-item-title">チャネル</div>
+              </div>
+              <ul>
+                <li>Chrome Web Store（<abbr title="検索エンジン最適化 (Search Engine Optimization)">SEO</abbr>）</li>
+                <li>高専・大学口コミ</li>
+                <li>教育系インフルエンサー</li>
+                <li>高専起業家サミット</li>
+                <li>B2B: 教育委員会直接営業</li>
+              </ul>
+            </div>
+
+            <!-- ⑥ 収益の流れ -->
+            <div class="lean-item">
+              <div class="lean-item-header">
+                <div class="lean-item-number">6</div>
+                <div class="lean-item-title">収益の流れ</div>
+              </div>
+              <p><strong><abbr title="基本無料 + 有料プレミアムの収益モデル">Freemium</abbr> + 広告</strong>: 基本無料（ブロック画面に広告表示）→ Premium
+                ¥300-500/月（広告なし）</p>
+              <p><strong>B2Bライセンス</strong>: ¥500-1,000/年/生徒（管理者ダッシュボード付き）</p>
+            </div>
+
+            <!-- ⑦ コスト構造 -->
+            <div class="lean-item">
+              <div class="lean-item-header">
+                <div class="lean-item-number">7</div>
+                <div class="lean-item-title">コスト構造</div>
+              </div>
+              <ul>
+                <li>1人開発（人件費のみ）</li>
+                <li>インフラほぼゼロ（ローカル推論）</li>
+                <li>Chrome Web Store $5</li>
+                <li>マーケ: コミュニティ駆動で低コスト</li>
+              </ul>
+            </div>
+
+            <!-- ⑧ 主要指標 -->
+            <div class="lean-item">
+              <div class="lean-item-header">
+                <div class="lean-item-number">8</div>
+                <div class="lean-item-title">主要指標（<abbr title="重要業績評価指標 (Key Performance Indicator)">KPI</abbr>）</div>
+              </div>
+              <ul>
+                <li><abbr title="週間アクティブユーザー数 (Weekly Active Users)">WAU</abbr>（週間アクティブユーザー）</li>
+                <li>Freemium→Premium転換率（目標5%+）</li>
+                <li>平均セッション時間</li>
+                <li><abbr title="推奨度スコア — ユーザー満足度の指標 (Net Promoter Score)">NPS</abbr></li>
+                <li>B2B導入校数</li>
+              </ul>
+            </div>
+
+            <!-- ⑨ 圧倒的な優位性 -->
+            <div class="lean-item" style="border-color: var(--success-300); background: var(--success-50);">
+              <div class="lean-item-header">
+                <div class="lean-item-number">9</div>
+                <div class="lean-item-title">圧倒的な優位性</div>
+              </div>
+              <ul>
+                <li><strong>技術</strong>: ローカルAI意味理解（競合はURL/ルールベース）</li>
+                <li><strong>プライバシー</strong>: 閲覧データの外部送信ゼロ → 規制準拠の負担を大幅軽減</li>
+                <li><strong>当事者</strong>: 高専生自身がユーザー＝開発者</li>
+                <li><strong>参入障壁</strong>: Transformers.js + Chrome拡張のAI統合は技術的ハードル高</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================== Market Summary ===================== -->
+        <section class="section" id="market-summary">
+          <div class="section-header">
+            <h2><span class="section-number">2</span>市場環境サマリー</h2>
+          </div>
+
+          <div class="card-grid card-grid-3">
+            <div class="market-card">
+              <div class="market-emoji">📊</div>
+              <div class="market-title"><abbr title="教育 × テクノロジー (Education Technology)">EdTech</abbr>市場（日本）</div>
+              <div class="market-value">$3.5B〜$10B</div>
+              <div class="market-sub">2024年 / <abbr title="年平均成長率 (Compound Annual Growth Rate)">CAGR</abbr> 12〜19%
+              </div>
+            </div>
+            <div class="market-card">
+              <div class="market-emoji">🧠</div>
+              <div class="market-title">Edge AI市場</div>
+              <div class="market-value">$24.9B〜$35.8B</div>
+              <div class="market-sub">2025年 / CAGR 17.6〜33.3%</div>
+            </div>
+            <div class="market-card">
+              <div class="market-emoji">📱</div>
+              <div class="market-title">脱線問題</div>
+              <div class="market-value">59%</div>
+              <div class="market-sub"><abbr title="経済協力開発機構">OECD</abbr> — デバイスで脱線する割合</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================== Competitive Position ===================== -->
+        <section class="section" id="competitive-position">
+          <div class="section-header">
+            <h2><span class="section-number">3</span>競合ポジション</h2>
+          </div>
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>製品</th>
+                  <th>アプローチ</th>
+                  <th>AI</th>
+                  <th>プライバシー</th>
+                  <th>学生特化</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Freedom</td>
+                  <td>URLブロック</td>
+                  <td><span class="cross">❌</span></td>
+                  <td><span class="warn">⚠️ クラウド</span></td>
+                  <td><span class="cross">❌</span></td>
+                </tr>
+                <tr>
+                  <td>Forest</td>
+                  <td>ゲーミフィケーション</td>
+                  <td><span class="cross">❌</span></td>
+                  <td><span class="warn">⚠️ クラウド</span></td>
+                  <td>△</td>
+                </tr>
+                <tr>
+                  <td>Cold Turkey</td>
+                  <td>ハードブロック</td>
+                  <td><span class="cross">❌</span></td>
+                  <td><span class="check">✅ ローカル</span></td>
+                  <td><span class="cross">❌</span></td>
+                </tr>
+                <tr>
+                  <td>StayFocusd</td>
+                  <td>時間制限</td>
+                  <td><span class="cross">❌</span></td>
+                  <td><span class="check">✅ ローカル</span></td>
+                  <td><span class="cross">❌</span></td>
+                </tr>
+                <tr class="row-highlight">
+                  <td><strong>Study Focus Guard</strong></td>
+                  <td><strong>AI意味理解</strong></td>
+                  <td><span class="check"><strong>✅</strong></span></td>
+                  <td><span class="check"><strong>✅ 完全ローカル</strong></span></td>
+                  <td><span class="check"><strong>✅</strong></span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="doc-footer">
+          <p>Study Focus Guard — 簡易事業書1枚 | 2026年2月</p>
+          <p>© 盛髙 雄寛（熊本高専）</p>
+        </footer>
+
       </div>
-    </section>
+    </main>
+  </div>
 
-    <div class="content-container">
+  <button class="back-to-top" id="backToTop" aria-label="ページ上部へ">↑</button>
 
-      <!-- ===================== UVP ===================== -->
-      <section class="section" id="uvp">
-        <div class="callout callout-highlight">
-          <div class="callout-icon">🎯</div>
-          <div class="callout-content">
-            <p style="font-size: 1.1rem; font-weight: 700;"><abbr title="独自の価値提案 (Unique Value Proposition)">UVP</abbr>: 「ブロックだけに頼らない。AIが理解する。」</p>
-            <p>ローカルAIがページのタイトルや見出しと勉強テーマの意味的関連性をリアルタイム判定し、脱線をピンポイント検知。閲覧データの外部送信ゼロ。</p>
-          </div>
-        </div>
-      </section>
+  <script>
+    const sections = document.querySelectorAll('.section');
+    const navLinks = document.querySelectorAll('.sidebar-nav a');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === '#' + entry.target.id) {
+              link.classList.add('active');
+            }
+          });
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    sections.forEach(s => observer.observe(s));
 
-      <!-- ===================== Lean Canvas ===================== -->
-      <section class="section" id="lean-canvas">
-        <div class="section-header">
-          <h2><span class="section-number">1</span>Lean Canvas</h2>
-        </div>
+    const backToTop = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => backToTop.classList.toggle('visible', window.scrollY > 400));
+    backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
-        <div class="lean-grid">
-          <!-- ① 課題 -->
-          <div class="lean-item">
-            <div class="lean-item-header">
-              <div class="lean-item-number">1</div>
-              <div class="lean-item-title">課題（Problem）</div>
-            </div>
-            <ul>
-              <li>学生がPC勉強中にSNS・動画に脱線し集中力を失う（高3の約50%がSNSしながら勉強）</li>
-              <li>既存ブロッカーはURL単位の一律ブロックで「調べ学習中の関連ページ」まで遮断</li>
-              <li>教育機関はWebフィルタリング必須だが「学習支援」レイヤーの製品が不在</li>
-            </ul>
-          </div>
-
-          <!-- ② 顧客セグメント -->
-          <div class="lean-item">
-            <div class="lean-item-header">
-              <div class="lean-item-number">2</div>
-              <div class="lean-item-title">顧客セグメント</div>
-            </div>
-            <p><strong>アーリーアダプター</strong>: 高専生・理系大学生（PC勉強、自己管理意識高い）</p>
-            <p><strong>将来</strong>: 中高生（<abbr title="Global Innovation Gateway for All — 文科省の全校端末配布構想">GIGA</abbr>スクール端末）、社会人（リモートワーク）</p>
-            <p><strong><abbr title="企業対企業の取引 (Business to Business)">B2B</abbr></strong>: 教育委員会、学校法人、学習塾</p>
-          </div>
-
-          <!-- ③ 独自の価値提案 -->
-          <div class="lean-item" style="border-color: var(--primary-300); background: var(--primary-50);">
-            <div class="lean-item-header">
-              <div class="lean-item-number">3</div>
-              <div class="lean-item-title">独自の価値提案（UVP）</div>
-            </div>
-            <p><strong>ローカルAI意味理解 × プライバシーファースト</strong></p>
-            <p>ページのタイトルや見出しの意味的類似度をAIでリアルタイム判定。閲覧データの外部送信ゼロで<abbr title="米国 家庭教育権・プライバシー法">FERPA</abbr>/<abbr title="米国 児童オンラインプライバシー保護法">COPPA</abbr>/<abbr title="EU 一般データ保護規則">GDPR</abbr>への準拠が容易。</p>
-          </div>
-
-          <!-- ④ ソリューション -->
-          <div class="lean-item">
-            <div class="lean-item-header">
-              <div class="lean-item-number">4</div>
-              <div class="lean-item-title">ソリューション</div>
-            </div>
-            <ul>
-              <li>AI意味的類似度判定（Multilingual MiniLM-L12-v2）でリアルタイム評価</li>
-              <li>閾値ベースの警告オーバーレイ（ブロックではなく「気づき」）</li>
-              <li>YouTube Shorts / Instagram 自動ブロック</li>
-              <li>学習統計ダッシュボード</li>
-            </ul>
-          </div>
-
-          <!-- ⑤ チャネル -->
-          <div class="lean-item">
-            <div class="lean-item-header">
-              <div class="lean-item-number">5</div>
-              <div class="lean-item-title">チャネル</div>
-            </div>
-            <ul>
-              <li>Chrome Web Store（<abbr title="検索エンジン最適化 (Search Engine Optimization)">SEO</abbr>）</li>
-              <li>高専・大学口コミ</li>
-              <li>教育系インフルエンサー</li>
-              <li>高専起業家サミット</li>
-              <li>B2B: 教育委員会直接営業</li>
-            </ul>
-          </div>
-
-          <!-- ⑥ 収益の流れ -->
-          <div class="lean-item">
-            <div class="lean-item-header">
-              <div class="lean-item-number">6</div>
-              <div class="lean-item-title">収益の流れ</div>
-            </div>
-            <p><strong><abbr title="基本無料 + 有料プレミアムの収益モデル">Freemium</abbr> + 広告</strong>: 基本無料（ブロック画面に広告表示）→ Premium ¥300-500/月（広告なし）</p>
-            <p><strong>B2Bライセンス</strong>: ¥500-1,000/年/生徒（管理者ダッシュボード付き）</p>
-          </div>
-
-          <!-- ⑦ コスト構造 -->
-          <div class="lean-item">
-            <div class="lean-item-header">
-              <div class="lean-item-number">7</div>
-              <div class="lean-item-title">コスト構造</div>
-            </div>
-            <ul>
-              <li>1人開発（人件費のみ）</li>
-              <li>インフラほぼゼロ（ローカル推論）</li>
-              <li>Chrome Web Store $5</li>
-              <li>マーケ: コミュニティ駆動で低コスト</li>
-            </ul>
-          </div>
-
-          <!-- ⑧ 主要指標 -->
-          <div class="lean-item">
-            <div class="lean-item-header">
-              <div class="lean-item-number">8</div>
-              <div class="lean-item-title">主要指標（<abbr title="重要業績評価指標 (Key Performance Indicator)">KPI</abbr>）</div>
-            </div>
-            <ul>
-              <li><abbr title="週間アクティブユーザー数 (Weekly Active Users)">WAU</abbr>（週間アクティブユーザー）</li>
-              <li>Freemium→Premium転換率（目標5%+）</li>
-              <li>平均セッション時間</li>
-              <li><abbr title="推奨度スコア — ユーザー満足度の指標 (Net Promoter Score)">NPS</abbr></li>
-              <li>B2B導入校数</li>
-            </ul>
-          </div>
-
-          <!-- ⑨ 圧倒的な優位性 -->
-          <div class="lean-item" style="border-color: var(--success-300); background: var(--success-50);">
-            <div class="lean-item-header">
-              <div class="lean-item-number">9</div>
-              <div class="lean-item-title">圧倒的な優位性</div>
-            </div>
-            <ul>
-              <li><strong>技術</strong>: ローカルAI意味理解（競合はURL/ルールベース）</li>
-              <li><strong>プライバシー</strong>: 閲覧データの外部送信ゼロ → 規制準拠の負担を大幅軽減</li>
-              <li><strong>当事者</strong>: 高専生自身がユーザー＝開発者</li>
-              <li><strong>参入障壁</strong>: Transformers.js + Chrome拡張のAI統合は技術的ハードル高</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== Market Summary ===================== -->
-      <section class="section" id="market-summary">
-        <div class="section-header">
-          <h2><span class="section-number">2</span>市場環境サマリー</h2>
-        </div>
-
-        <div class="card-grid card-grid-3">
-          <div class="market-card">
-            <div class="market-emoji">📊</div>
-            <div class="market-title"><abbr title="教育 × テクノロジー (Education Technology)">EdTech</abbr>市場（日本）</div>
-            <div class="market-value">$3.5B〜$10B</div>
-            <div class="market-sub">2024年 / <abbr title="年平均成長率 (Compound Annual Growth Rate)">CAGR</abbr> 12〜19%</div>
-          </div>
-          <div class="market-card">
-            <div class="market-emoji">🧠</div>
-            <div class="market-title">Edge AI市場</div>
-            <div class="market-value">$24.9B〜$35.8B</div>
-            <div class="market-sub">2025年 / CAGR 17.6〜33.3%</div>
-          </div>
-          <div class="market-card">
-            <div class="market-emoji">📱</div>
-            <div class="market-title">脱線問題</div>
-            <div class="market-value">59%</div>
-            <div class="market-sub"><abbr title="経済協力開発機構">OECD</abbr> — デバイスで脱線する割合</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== Competitive Position ===================== -->
-      <section class="section" id="competitive-position">
-        <div class="section-header">
-          <h2><span class="section-number">3</span>競合ポジション</h2>
-        </div>
-
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr><th>製品</th><th>アプローチ</th><th>AI</th><th>プライバシー</th><th>学生特化</th></tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Freedom</td>
-                <td>URLブロック</td>
-                <td><span class="cross">❌</span></td>
-                <td><span class="warn">⚠️ クラウド</span></td>
-                <td><span class="cross">❌</span></td>
-              </tr>
-              <tr>
-                <td>Forest</td>
-                <td>ゲーミフィケーション</td>
-                <td><span class="cross">❌</span></td>
-                <td><span class="warn">⚠️ クラウド</span></td>
-                <td>△</td>
-              </tr>
-              <tr>
-                <td>Cold Turkey</td>
-                <td>ハードブロック</td>
-                <td><span class="cross">❌</span></td>
-                <td><span class="check">✅ ローカル</span></td>
-                <td><span class="cross">❌</span></td>
-              </tr>
-              <tr>
-                <td>StayFocusd</td>
-                <td>時間制限</td>
-                <td><span class="cross">❌</span></td>
-                <td><span class="check">✅ ローカル</span></td>
-                <td><span class="cross">❌</span></td>
-              </tr>
-              <tr class="row-highlight">
-                <td><strong>Study Focus Guard</strong></td>
-                <td><strong>AI意味理解</strong></td>
-                <td><span class="check"><strong>✅</strong></span></td>
-                <td><span class="check"><strong>✅ 完全ローカル</strong></span></td>
-                <td><span class="check"><strong>✅</strong></span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- Footer -->
-      <footer class="doc-footer">
-        <p>Study Focus Guard — 簡易事業書1枚 | 2026年2月</p>
-        <p>© 盛髙 雄寛（熊本高専）</p>
-      </footer>
-
-    </div>
-  </main>
-</div>
-
-<button class="back-to-top" id="backToTop" aria-label="ページ上部へ">↑</button>
-
-<script>
-  const sections = document.querySelectorAll('.section');
-  const navLinks = document.querySelectorAll('.sidebar-nav a');
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        navLinks.forEach(link => {
-          link.classList.remove('active');
-          if (link.getAttribute('href') === '#' + entry.target.id) {
-            link.classList.add('active');
-          }
-        });
-      }
-    });
-  }, { rootMargin: '-20% 0px -70% 0px' });
-  sections.forEach(s => observer.observe(s));
-
-  const backToTop = document.getElementById('backToTop');
-  window.addEventListener('scroll', () => backToTop.classList.toggle('visible', window.scrollY > 400));
-  backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-
-  const menuToggle = document.getElementById('menuToggle');
-  const sidebar = document.getElementById('sidebar');
-  const overlay = document.getElementById('sidebarOverlay');
-  menuToggle.addEventListener('click', () => { sidebar.classList.toggle('open'); overlay.classList.toggle('show'); });
-  overlay.addEventListener('click', () => { sidebar.classList.remove('open'); overlay.classList.remove('show'); });
-</script>
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    menuToggle.addEventListener('click', () => { sidebar.classList.toggle('open'); overlay.classList.toggle('show'); });
+    overlay.addEventListener('click', () => { sidebar.classList.remove('open'); overlay.classList.remove('show'); });
+  </script>
 
 </body>
+
 </html>
