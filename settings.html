@@ -37,12 +37,25 @@
             </div>
 
             <div class="filter-section">
-                <label data-i18n="filter_label">判定機能:</label>
-                <select id="blocking-filter">
-                    <option value="all" data-i18n="filter_all">ON + OFF合計</option>
-                    <option value="on" data-i18n="filter_on">ONの時のみ</option>
-                    <option value="off" data-i18n="filter_off">OFFの時のみ</option>
-                </select>
+                <div class="filter-row">
+                    <label data-i18n="filter_label">判定機能:</label>
+                    <select id="blocking-filter">
+                        <option value="all" data-i18n="filter_all">ON + OFF合計</option>
+                        <option value="on" data-i18n="filter_on">ONの時のみ</option>
+                        <option value="off" data-i18n="filter_off">OFFの時のみ</option>
+                    </select>
+                </div>
+                <div class="filter-row">
+                    <label data-i18n="filter_block_label">ブロック機能:</label>
+                    <select id="block-feature-filter">
+                        <option value="all" data-i18n="filter_all">ON + OFF合計</option>
+                        <option value="on" data-i18n="filter_on">ONの時のみ</option>
+                        <option value="off" data-i18n="filter_off">OFFの時のみ</option>
+                    </select>
+                </div>
+                <div class="filter-row filter-row-right">
+                    <button id="y-axis-lock-btn" class="y-axis-btn" data-locked="false">軸: 自動</button>
+                </div>
             </div>
 
             <!-- グラフエリア -->

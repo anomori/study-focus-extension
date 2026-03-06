@@ -207,7 +207,8 @@ async function recordBrowsingSession(session) {
       startTime: session.startTime,
       endTime,
       duration,
-      isBlockingEnabled: session.isBlockEnabled,
+      isBlockingEnabled: session.isCheckEnabled,
+      isBlockFeatureEnabled: session.isBlockEnabled,
       date,
       hour
     });
@@ -236,6 +237,39 @@ setInterval(async () => {
     }
   }
 }, SESSION_SAVE_INTERVAL);
+
+// 機能ON/OFF切替時: アクティブセッションをその時点で記録し、新状態で再開する
+async function restartSessionsWithNewFeatureState() {
+  if (activeSessions.size === 0) return;
+
+  const settings = await chrome.storage.local.get(['checkFeatureEnabled', 'blockFeatureEnabled']);
+  const isCheckEnabled = settings.checkFeatureEnabled !== false;
+  const isBlockEnabled = settings.blockFeatureEnabled !== false;
+  const now = Date.now();
+
+  for (const [tabId, session] of activeSessions.entries()) {
+    // 現在のセッションを lastSaveTime〜now として記録
+    const partial = {
+      ...session,
+      startTime: session.lastSaveTime
+    };
+    await recordBrowsingSession(partial);
+
+    // 新しいフラグで再開
+    session.isCheckEnabled = isCheckEnabled;
+    session.isBlockEnabled = isBlockEnabled;
+    session.startTime = now;
+    session.lastSaveTime = now;
+  }
+}
+
+// checkFeatureEnabled / blockFeatureEnabled が変化したら全セッションを再起動
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area !== 'local') return;
+  if ('checkFeatureEnabled' in changes || 'blockFeatureEnabled' in changes) {
+    restartSessionsWithNewFeatureState();
+  }
+});
 
 // Relay messages from Content Script to Offscreen Document
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -478,7 +512,7 @@ async function applyTimerAction(feature, action) {
         chrome.tabs.sendMessage(tab.id, {
           type: 'CHECK_FEATURE_TOGGLED',
           enabled: enabled
-        }).catch(() => {});
+        }).catch(() => { });
       }
     }
   } else if (feature === 'block') {
@@ -489,7 +523,7 @@ async function applyTimerAction(feature, action) {
         chrome.tabs.sendMessage(tab.id, {
           type: 'BLOCK_FEATURE_TOGGLED',
           enabled: enabled
-        }).catch(() => {});
+        }).catch(() => { });
       }
     }
   }

@@ -178,7 +178,7 @@ const StatisticsStorage = {
     // ========== 統計取得 ==========
     // ========== 統計取得 ==========
     async getStatistics(startDate, endDate, options = {}) {
-        const { groupBy = 'day', filterBlocking = null, timezone = 'UTC' } = options;
+        const { groupBy = 'day', filterBlocking = null, filterBlockFeature = null, timezone = 'UTC' } = options;
 
         const patienceData = await chrome.storage.local.get('stats_patience');
         const browsingData = await chrome.storage.local.get('stats_browsing');
@@ -186,9 +186,14 @@ const StatisticsStorage = {
         let patienceEvents = patienceData.stats_patience || [];
         let browsingSessions = browsingData.stats_browsing || [];
 
-        // ブロッキング状態フィルター
+        // 判定機能フィルター
         if (filterBlocking !== null) {
             browsingSessions = browsingSessions.filter(s => s.isBlockingEnabled === filterBlocking);
+        }
+
+        // ブロック機能フィルター
+        if (filterBlockFeature !== null) {
+            browsingSessions = browsingSessions.filter(s => s.isBlockFeatureEnabled === filterBlockFeature);
         }
 
         // タイムゾーンを考慮して日付フィルターとグループ化を行う
@@ -715,21 +720,24 @@ const StatisticsStorage = {
         }
 
         if (sessions.length === 0) {
-            return '日付,ドメイン,閲覧時間(分),判定機能\n';
+            return '日付,ドメイン,閲覧時間(分),判定機能,ブロック機能\n';
         }
 
-        // ピボットテーブル形式: 日付, ドメイン, 閲覧時間(分), 判定機能
-        const rows = [['日付', 'ドメイン', '閲覧時間(分)', '判定機能']];
+        // ピボットテーブル形式: 日付, ドメイン, 閲覧時間(分), 判定機能, ブロック機能
+        const rows = [['日付', 'ドメイン', '閲覧時間(分)', '判定機能', 'ブロック機能']];
 
-        // 日付・ドメイン・判定機能でグループ化
+        // 日付・ドメイン・判定機能・ブロック機能でグループ化
         const grouped = {};
         sessions.forEach(session => {
-            const key = `${session.date}|${session.domain}|${session.isBlockingEnabled ? 'ON' : 'OFF'}`;
+            const checkStatus = session.isBlockingEnabled ? 'ON' : 'OFF';
+            const blockStatus = session.isBlockFeatureEnabled ? 'ON' : 'OFF';
+            const key = `${session.date}|${session.domain}|${checkStatus}|${blockStatus}`;
             if (!grouped[key]) {
                 grouped[key] = {
                     date: session.date,
                     domain: session.domain,
                     isBlockingEnabled: session.isBlockingEnabled,
+                    isBlockFeatureEnabled: session.isBlockFeatureEnabled,
                     totalTime: 0
                 };
             }
@@ -745,7 +753,8 @@ const StatisticsStorage = {
                 entry.date,
                 entry.domain,
                 minutes.toString(),
-                entry.isBlockingEnabled ? 'ON' : 'OFF'
+                entry.isBlockingEnabled ? 'ON' : 'OFF',
+                entry.isBlockFeatureEnabled ? 'ON' : 'OFF'
             ]);
         });
 

@@ -158,11 +158,44 @@ body {
 
 .filter-section {
     display: flex;
-    align-items: center;
-    gap: 12px;
+    flex-direction: column;
+    gap: 8px;
     margin-bottom: 20px;
     color: #888;
     font-size: 14px;
+}
+
+.filter-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.filter-row-right {
+    margin-top: 4px;
+}
+
+.y-axis-btn {
+    padding: 6px 14px;
+    background: rgba(45, 90, 150, 0.6);
+    border: 1px solid rgba(0, 217, 255, 0.35);
+    border-radius: 6px;
+    color: #888;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.y-axis-btn:hover {
+    background: rgba(45, 90, 150, 0.9);
+    color: #eaeaea;
+}
+
+.y-axis-btn[data-locked="true"] {
+    background: rgba(0, 217, 255, 0.18);
+    border-color: rgba(0, 217, 255, 0.7);
+    color: #00d9ff;
+    font-weight: 600;
 }
 
 .filter-section select {

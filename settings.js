@@ -78,6 +78,9 @@ let currentView = 'day';
 let usageChart = null;
 let selectedBarIndex = null;
 let cachedTimezone = null;
+let yAxisLocked = false; // Y軸固定モード (true = 24h固定)
+
+const Y_AXIS_MAX_MINUTES = 1440; // 24h 分
 
 // チャートクリックハンドラ生成（renderChart内で共有）
 function createChartClickHandler(data, keys, stats) {
@@ -136,8 +139,27 @@ function initStatistics() {
         updateChart();
     });
 
+    // Y軸固定ボタン
+    const yAxisBtn = document.getElementById('y-axis-lock-btn');
+    function updateYAxisBtn() {
+        if (yAxisLocked) {
+            yAxisBtn.dataset.locked = 'true';
+            yAxisBtn.textContent = I18n.getMessage('y_axis_fixed');
+        } else {
+            yAxisBtn.dataset.locked = 'false';
+            yAxisBtn.textContent = I18n.getMessage('y_axis_auto');
+        }
+    }
+    yAxisBtn.addEventListener('click', () => {
+        yAxisLocked = !yAxisLocked;
+        updateYAxisBtn();
+        updateChart();
+    });
+    updateYAxisBtn();
+
     // フィルター変更
     document.getElementById('blocking-filter').addEventListener('change', updateChart);
+    document.getElementById('block-feature-filter').addEventListener('change', updateChart);
 
     // 初期表示
     updateChart();
@@ -162,6 +184,9 @@ function updatePeriodDisplay() {
 async function updateChart() {
     const filter = document.getElementById('blocking-filter').value;
     const filterBlocking = filter === 'all' ? null : filter === 'on';
+
+    const blockFilter = document.getElementById('block-feature-filter').value;
+    const filterBlockFeature = blockFilter === 'all' ? null : blockFilter === 'on';
 
     // タイムゾーン設定をキャッシュから取得（初回のみストレージアクセス）
     if (!cachedTimezone) {
@@ -188,6 +213,7 @@ async function updateChart() {
     const stats = await StatisticsStorage.getStatistics(startDate, endDate, {
         groupBy: currentView,
         filterBlocking,
+        filterBlockFeature,
         timezone
     });
 
@@ -238,6 +264,8 @@ function renderChart(labels, data, stats, keys) {
         usageChart.data.datasets[0].backgroundColor = backgroundColors;
         // onClickコールバックを更新するためoptionsを差し替え
         usageChart.options.onClick = createChartClickHandler(data, keys, stats);
+        // Y軸スケールを更新
+        usageChart.options.scales.y.max = yAxisLocked ? Y_AXIS_MAX_MINUTES : undefined;
         usageChart.update('none');
         return;
     }
@@ -300,7 +328,8 @@ function renderChart(labels, data, stats, keys) {
                             }
                             return `${value}m`;
                         }
-                    }
+                    },
+                    ...(yAxisLocked ? { max: Y_AXIS_MAX_MINUTES } : {})
                 }
             }
         }
