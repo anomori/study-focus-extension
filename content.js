@@ -3,6 +3,7 @@ console.log("Study Focus Guard: Content script loaded.");
 
 const RELEVANCE_THRESHOLD = 0.35;
 let isOverlayShowing = false;
+const BLOCK_OVERLAY_ID = 'study-focus-block-overlay';
 
 // Known distraction domains to penalize (for score calculation only)
 const DISTRACTION_DOMAINS = [
@@ -57,13 +58,17 @@ async function checkImmediateBlocks() {
         const checkEnabled = settings.checkFeatureEnabled !== false;
         const blockEnabled = settings.blockFeatureEnabled !== false;
 
-        if (!checkEnabled && !blockEnabled) return;
+        if (!checkEnabled && !blockEnabled) {
+            removeBlockOverlay();
+            return;
+        }
 
         const siteSettings = await checkSiteSettings();
 
         // If allowlisted, skip all checks
         if (siteSettings.allowed) {
             console.log("Site is allowlisted. Skipping all checks.");
+            removeBlockOverlay();
             return;
         }
 
@@ -76,9 +81,12 @@ async function checkImmediateBlocks() {
             const messageTemplate = typeof I18n !== 'undefined' ? I18n.getMessage('block_message') : "{site}は勉強中にブロックされています。";
             const message = messageTemplate.replace('{site}', siteSettings.reason || 'このサイト');
 
+            removeDistractionOverlay();
             blockContent(title, message);
             return;
         }
+
+        removeBlockOverlay();
     } catch (e) {
         console.error("Error in checkImmediateBlocks:", e);
     }
@@ -88,13 +96,29 @@ checkImmediateBlocks();
 
 // Watch for URL changes (SPA support like YouTube)
 let lastUrl = location.href;
-new MutationObserver(() => {
+function handlePotentialUrlChange() {
     const url = location.href;
     if (url !== lastUrl) {
         lastUrl = url;
         onUrlChange();
     }
-}).observe(document, { subtree: true, childList: true });
+}
+
+new MutationObserver(handlePotentialUrlChange).observe(document, { subtree: true, childList: true });
+window.addEventListener('popstate', handlePotentialUrlChange);
+window.addEventListener('hashchange', handlePotentialUrlChange);
+
+const originalPushState = history.pushState;
+history.pushState = function (...args) {
+    originalPushState.apply(this, args);
+    handlePotentialUrlChange();
+};
+
+const originalReplaceState = history.replaceState;
+history.replaceState = function (...args) {
+    originalReplaceState.apply(this, args);
+    handlePotentialUrlChange();
+};
 
 async function onUrlChange() {
     try {
@@ -102,13 +126,18 @@ async function onUrlChange() {
         const checkEnabled = settings.checkFeatureEnabled !== false;
         const blockEnabled = settings.blockFeatureEnabled !== false;
 
-        if (!checkEnabled && !blockEnabled) return;
+        if (!checkEnabled && !blockEnabled) {
+            removeBlockOverlay();
+            removeDistractionOverlay();
+            return;
+        }
 
         const siteSettings = await checkSiteSettings();
 
         // If allowlisted, skip all checks
         if (siteSettings.allowed) {
             console.log("Site is allowlisted. Skipping all checks.");
+            removeBlockOverlay();
             removeDistractionOverlay();
             return;
         }
@@ -121,8 +150,10 @@ async function onUrlChange() {
             const messageTemplate = typeof I18n !== 'undefined' ? I18n.getMessage('block_message') : "{site}は勉強中にブロックされています。";
             const message = messageTemplate.replace('{site}', siteSettings.reason || 'このサイト');
 
+            removeDistractionOverlay();
             blockContent(title, message);
         } else {
+            removeBlockOverlay();
             removeDistractionOverlay();
             // Clear dismiss cooldown on URL change (new page should be checked)
             dismissCooldownUntil = 0;
@@ -141,23 +172,45 @@ async function onUrlChange() {
 }
 
 function blockContent(title, message) {
-    // Stop video/audio playback BEFORE replacing DOM
+    // Stop video/audio playback when blocking
     document.querySelectorAll('video, audio').forEach(el => {
         try { el.pause(); el.src = ''; } catch (e) { /* ignore */ }
     });
 
-    const container = document.createElement('div');
-    container.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:999999;font-family:sans-serif;';
+    let container = document.getElementById(BLOCK_OVERLAY_ID);
+    if (!container) {
+        container = document.createElement('div');
+        container.id = BLOCK_OVERLAY_ID;
+        container.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:999999;font-family:sans-serif;padding:24px;box-sizing:border-box;text-align:center;';
 
-    const h1 = document.createElement('h1');
-    h1.textContent = '⛔ ' + title + ' ⛔';
-    const p = document.createElement('p');
-    p.textContent = message;
+        const h1 = document.createElement('h1');
+        h1.className = 'sfg-block-title';
+        const p = document.createElement('p');
+        p.className = 'sfg-block-message';
 
-    container.appendChild(h1);
-    container.appendChild(p);
-    document.body.innerHTML = '';
-    document.body.appendChild(container);
+        container.appendChild(h1);
+        container.appendChild(p);
+
+        const mountPoint = document.body || document.documentElement;
+        mountPoint.appendChild(container);
+    }
+
+    const titleEl = container.querySelector('.sfg-block-title');
+    const messageEl = container.querySelector('.sfg-block-message');
+
+    if (titleEl) {
+        titleEl.textContent = '⛔ ' + title + ' ⛔';
+    }
+    if (messageEl) {
+        messageEl.textContent = message;
+    }
+}
+
+function removeBlockOverlay() {
+    const blockOverlay = document.getElementById(BLOCK_OVERLAY_ID);
+    if (blockOverlay) {
+        blockOverlay.remove();
+    }
 }
 
 // 3. Similarity Check
@@ -516,7 +569,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             checkImmediateBlocks();
         } else {
             console.log("Block feature disabled.");
-            // Don't remove overlays as check feature might still be on
+            removeBlockOverlay();
         }
     }
 });
